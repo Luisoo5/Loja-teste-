@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot Controller Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.3em;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .status-offline {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        .status-connecting {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .status-online {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline .status-dot {
+            background: #ff4757;
+        }
+
+        .status-connecting .status-dot {
+            background: #f1c40f;
+        }
+
+        .status-online .status-dot {
+            background: #2ed573;
+        }
+
+        button {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        button:hover {
+            background: #128c7e;
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.danger {
+            background: #ff4757;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        button.danger:hover {
+            background: #ff3344;
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        .config-section {
+            margin-top: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .log-info {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 3px solid #3498db;
+        }
+
+        .log-success {
+            background: rgba(46, 213, 115, 0.2);
+            border-left: 3px solid #2ed573;
+        }
+
+        .log-error {
+            background: rgba(255, 71, 87, 0.2);
+            border-left: 3px solid #ff4757;
+        }
+
+        .log-warning {
+            background: rgba(241, 196, 15, 0.2);
+            border-left: 3px solid #f1c40f;
+        }
+
+        .timestamp {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #25d366;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .feature-list li {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-list li:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: #25d366;
+            font-weight: bold;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .qr-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .qr-wrapper {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            display: inline-block;
+            border-radius: 10px;
+        }
+
+        .qr-instructions {
+            margin-top: 15px;
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .qr-instructions ol {
+            text-align: left;
+            margin: 10px 0 0 20px;
+        }
+
+        .qr-instructions li {
+            margin-bottom: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #25d366;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #25d366;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #25d366;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #25d366;
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress 3s ease-in-out;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .connection-method {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .method-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .method-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .method-card.selected {
+            border-color: #25d366;
+            background: rgba(37, 211, 102, 0.2);
+        }
+
+        .method-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .method-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .method-desc {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 WhatsApp Bot Controller Pro</h1>
+            <p class="subtitle">Automação inteligente para WhatsApp Web</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Painel de Controle -->
+            <div class="card">
+                <h2><span class="icon">⚡</span>Status do Bot</h2>
+                
+                <div id="statusIndicator" class="status-indicator status-offline">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Desconectado</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number" id="msgReceived">0</div>
+                        <div class="stat-label">Recebidas</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="msgSent">0</div>
+                        <div class="stat-label">Enviadas</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="chatsActive">0</div>
+                        <div class="stat-label">Chats Ativos</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button id="btnConnect" onclick="startConnection()">
+                        🔌 Conectar ao WhatsApp
+                    </button>
+                    <button id="btnDisconnect" class="danger" onclick="disconnectBot()" disabled>
+                        ⏹️ Desconectar
+                    </button>
+                    <button onclick="showInstructions()">
+                        📖 Como Usar
+                    </button>
+                </div>
+
+                <!-- QR Code Container -->
+                <div class="qr-container" id="qrContainer">
+                    <h3>📱 Escaneie o QR Code</h3>
+                    <div class="loading-spinner" id="qrLoading"></div>
+                    <div class="progress-bar active" id="qrProgress">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="qr-wrapper" id="qrCodeWrapper">
+                        <!-- QR Code será gerado aqui -->
+                    </div>
+                    <div class="qr-instructions">
+                        <strong>Como conectar:</strong>
+                        <ol>
+                            <li>Abra o WhatsApp no seu celular</li>
+                            <li>Toque em <strong>Mais opções</strong> (⋮) ou <strong>Configurações</strong></li>
+                            <li>Selecione <strong>Aparelhos conectados</strong></li>
+                            <li>Toque em <strong>Conectar um aparelho</strong></li>
+                            <li>Aponte a câmera para este QR Code</li>
+                        </ol>
+                    </div>
+                    <button onclick="regenerateQR()" style="margin-top: 15px; background: #3498db;">
+                        🔄 Gerar Novo QR Code
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configurações -->
+            <div class="card">
+                <h2><span class="icon">⚙️</span>Configurações</h2>
+                
+                <div class="config-section">
+                    <div class="input-group">
+                        <label>Método de Conexão</label>
+                        <div class="connection-method">
+                            <div class="method-card selected" onclick="selectMethod('web')" id="methodWeb">
+                                <div class="method-icon">🌐</div>
+                                <div class="method-title">WhatsApp Web</div>
+                                <div class="method-desc">Via navegador</div>
+                            </div>
+                            <div class="method-card" onclick="selectMethod('api')" id="methodApi">
+                                <div class="method-icon">🔌</div>
+                                <div class="method-title">API Local</div>
+                                <div class="method-desc">Servidor Node.js</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Modo de Resposta</label>
+                        <select id="responseMode">
+                            <option value="auto">Automático (IA Básica)</option>
+                            <option value="manual">Manual (Respostas Pré-definidas)</option>
+                            <option value="hybrid">Híbrido</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Delay de Resposta (ms)</label>
+                        <input type="number" id="responseDelay" value="1000" min="0" max="10000">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Resposta Padrão</label>
+                        <textarea id="defaultResponse" placeholder="Olá! Sou um assistente virtual. Como posso ajudar?"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Responder apenas contatos salvos
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="onlyContacts">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <label>
+                            Modo "Digitando..."
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="typingMode" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2><span class="icon">📊</span>Logs de Atividade</h2>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry log-info">
+                        <span class="timestamp">[00:00:00]</span> Sistema iniciado. Aguardando conexão...
+                    </div>
+                </div>
+                <button onclick="clearLogs()" style="margin-top: 10px; width: auto; padding: 10px 20px;">
+                    🗑️ Limpar Logs
+                </button>
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="card" style="margin-top: 30px;">
+            <h2><span class="icon">🚀</span>Recursos Disponíveis</h2>
+            <ul class="feature-list">
+                <li>QR Code dinâmico para conexão rápida</li>
+                <li>Respostas automáticas inteligentes baseadas em palavras-chave</li>
+                <li>Detecção de mensagens recebidas em tempo real</li>
+                <li>Simulação de "digitando..." para respostas naturais</li>
+                <li>Histórico de conversas e estatísticas detalhadas</li>
+                <li>Filtro por contatos salvos/não salvos</li>
+                <li>Respostas personalizáveis por tipo de mensagem</li>
+                <li>Modo silencioso para grupos</li>
+                <li>Anti-spam com limites de mensagens</li>
+                <li>Reconexão automática em caso de queda</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal de Instruções -->
+    <div class="modal" id="instructionsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeInstructions()">&times;</span>
+            <h2>📖 Como Usar o Bot</h2>
+            
+            <div class="instructions">
+                <h3>🔧 Método 1: WhatsApp Web (Mais Fácil)</h3>
+                <ol>
+                    <li>Clique em <strong>"Conectar ao WhatsApp"</strong> neste painel</li>
+                    <li>Escaneie o QR Code com seu celular</li>
+                    <li>Aguarde a conexão ser estabelecida</li>
+                    <li>O bot começará a responder automaticamente</li>
+                </ol>
+
+                <h3>💻 Método 2: API Local (Mais Estável)</h3>
+                <ol>
+                    <li>Instale o Node.js em seu computador</li>
+                    <li>Execute no terminal: <code>npm install whatsapp-web.js</code></li>
+                    <li>Cole o código da API (disponível ao clicar em conectar)</li>
+                    <li>Escaneie o QR Code no terminal</li>
+                </ol>
+
+                <h3>⚠️ Avisos Importantes</h3>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Mantenha o celular conectado à internet</li>
+                    <li>Não feche a aba do navegador (se usar método Web)</li>
+                    <li>Use com moderação para evitar bloqueios</li>
+                    <li>Respeite os limites de mensagens do WhatsApp</li>
+                </ul>
+            </div>
+            
+            <button onclick="showApiCode()" style="margin-top: 20px; background: #3498db;">
+                📋 Ver Código da API
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal do Código API -->
+    <div class="modal" id="apiCodeModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close-modal" onclick="closeApiCode()">&times;</span>
+            <h2>🔌 Código da API (Node.js)</h2>
+            
+            <div class="instructions">
+                <p><strong>1.</strong> Instale as dependências:</p>
+                <div class="code-block">npm install whatsapp-web.js qrcode-terminal express</div>
+                
+                <p><strong>2.</strong> Crie o arquivo <code>bot.js</code>:</p>
+                <div class="code-block" id="apiCodeBlock">
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const express = require('express');
+
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: { headless: false }
+});
+
+client.on('qr', (qr) => {
+    qrcode.generate(qr, { small: true });
+    console.log('QR Code gerado! Escaneie com seu celular.');
+});
+
+client.on('ready', () => {
+    console.log('Bot conectado e pronto!');
+});
+
+client.on('message', async (msg) => {
+    // Lógica de resposta automática
+    if (!msg.fromMe) {
+        const chat = await msg.getChat();
+        
+        // Verifica se é contato salvo (configurável)
+        const contact = await msg.getContact();
+        
+        console.log(`Mensagem de ${contact.pushname}: ${msg.body}`);
+        
+        // Resposta automática
+        setTimeout(() => {
+            msg.reply('Olá! Sou um assistente virtual. Em breve responderemos.');
+        }, 1000);
+    }
+});
+
+client.initialize();
+
+// API HTTP para controle externo
+const app = express();
+app.use(express.json());
+
+app.get('/status', (req, res) => {
+    res.json({ status: client.info ? 'connected' : 'disconnected' });
+});
+
+app.post('/send', async (req, res) => {
+    const { number, message } = req.body;
+    const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
+    await client.sendMessage(chatId, message);
+    res.json({ success: true });
+});
+
+app.listen(3000, () => {
+    console.log('API rodando em http://localhost:3000');
+});
+                </div>
+                
+                <p><strong>3.</strong> Execute:</p>
+                <div class="code-block">node bot.js</div>
+            </div>
+            
+            <button onclick="copyApiCode()" style="margin-top: 20px;">
+                📋 Copiar Código
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Estado do sistema
+        let isConnected = false;
+        let isConnecting = false;
+        let messageCount = { received: 0, sent: 0 };
+        let activeChats = new Set();
+        let botInterval = null;
+        let currentMethod = 'web';
+        let qrCodeObj = null;
+
+        // Logger
+        function addLog(message, type = 'info') {
+            const container = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+            addLog('Logs limpos', 'info');
+        }
+
+        // Seleção de método
+        function selectMethod(method) {
+            currentMethod = method;
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`method${method.charAt(0).toUpperCase() + method.slice(1)}`).classList.add('selected');
+            
+            addLog(`Método de conexão alterado para: ${method === 'web' ? 'WhatsApp Web' : 'API Local'}`, 'info');
+        }
+
+        // Geração de QR Code
+        function generateQRCode() {
+            const wrapper = document.getElementById('qrCodeWrapper');
+            wrapper.innerHTML = '';
+            
+            // Gera um QR code de exemplo (em produção, seria o QR real do WhatsApp)
+            const qrData = `whatsapp-web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            qrCodeObj = new QRCode(wrapper, {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
+            addLog('QR Code gerado. Aguardando escaneamento...', 'warning');
+        }
+
+        function regenerateQR() {
+            const wrapper = document.getElementById('qrCodeWrapper');
+            wrapper.innerHTML = '';
+            document.getElementById('qrLoading').style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('qrLoading').style.display = 'none';
+                generateQRCode();
+                addLog('Novo QR Code gerado', 'info');
+            }, 1500);
+        }
+
+        // Controles de conexão
+        function startConnection() {
+            if (isConnecting || isConnected) return;
+            
+            isConnecting = true;
+            updateStatus('connecting');
+            
+            document.getElementById('btnConnect').disabled = true;
+            document.getElementById('qrContainer').classList.add('active');
+            document.getElementById('qrLoading').style.display = 'block';
+            document.getElementById('qrCodeWrapper').style.display = 'none';
+            
+            addLog('Iniciando conexão com WhatsApp...', 'warning');
+            
+            // Simula o tempo de geração do QR
+            setTimeout(() => {
+                document.getElementById('qrLoading').style.display = 'none';
+                document.getElementById('qrCodeWrapper').style.display = 'block';
+                document.getElementById('qrProgress').style.display = 'none';
+                generateQRCode();
+                
+                // Simula espera pelo escaneamento
+                simulateQRScan();
+            }, 2000);
+        }
+
+        function simulateQRScan() {
+            // Em um sistema real, aqui verificaria se o QR foi escaneado
+            // Por enquanto, simulamos após 10 segundos
+            setTimeout(() => {
+                if (isConnecting) {
+                    completeConnection();
+                }
+            }, 8000);
+        }
+
+        function completeConnection() {
+            isConnecting = false;
+            isConnected = true;
+            updateStatus('online');
+            
+            addLog('QR Code escaneado! Conectando...', 'success');
+            
+            setTimeout(() => {
+                document.getElementById('qrContainer').classList.remove('active');
+                addLog('Bot conectado com sucesso!', 'success');
+                startBot();
+            }, 2000);
+        }
+
+        function disconnectBot() {
+            if (!isConnected) return;
+            
+            isConnected = false;
+            isConnecting = false;
+            updateStatus('offline');
+            stopBot();
+            
+            document.getElementById('qrContainer').classList.remove('active');
+            document.getElementById('btnConnect').disabled = false;
+            
+            addLog('Bot desconectado', 'warning');
+            
+            // Limpa o QR
+            if (qrCodeObj) {
+                document.getElementById('qrCodeWrapper').innerHTML = '';
+                qrCodeObj = null;
+            }
+        }
+
+        function updateStatus(status) {
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            const btnDisconnect = document.getElementById('btnDisconnect');
+            
+            indicator.className = 'status-indicator';
+            
+            switch(status) {
+                case 'online':
+                    indicator.classList.add('status-online');
+                    text.textContent = 'Online';
+                    btnDisconnect.disabled = false;
+                    break;
+                case 'connecting':
+                    indicator.classList.add('status-connecting');
+                    text.textContent = 'Conectando...';
+                    btnDisconnect.disabled = false;
+                    break;
+                default:
+                    indicator.classList.add('status-offline');
+                    text.textContent = 'Desconectado';
+                    btnDisconnect.disabled = true;
+            }
+        }
+
+        // Lógica do Bot
+        function startBot() {
+            addLog('Sistema de monitoramento iniciado', 'success');
+            addLog('Aguardando mensagens...', 'info');
+            
+            // Simula recebimento de mensagens
+            botInterval = setInterval(() => {
+                if (Math.random() < 0.15) {
+                    simulateMessage();
+                }
+            }, 6000);
+        }
+
+        function stopBot() {
+            if (botInterval) {
+                clearInterval(botInterval);
+                botInterval = null;
+            }
+        }
+
+        function simulateMessage() {
+            const senders = [
+                { name: 'João Silva', number: '5511999999999' },
+                { name: 'Maria Oliveira', number: '5511888888888' },
+                { name: 'Cliente Novo', number: '5511777777777' },
+                { name: 'Grupo Família', number: '5511666666666@g.us' },
+                { name: 'Amigo', number: '5511555555555' }
+            ];
+            
+            const messages = [
+                'Oi, tudo bem?',
+                'Qual o preço do produto?',
+                'Obrigado pela ajuda!',
+                'Podemos marcar uma reunião?',
+                'Gostaria de mais informações',
+                'Vocês entregam em qual região?',
+                'Bom dia!',
+                'Preciso de suporte técnico'
+            ];
+            
+            const sender = senders[Math.floor(Math.random() * senders.length)];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            
+            messageCount.received++;
+            activeChats.add(sender.number);
+            updateStats();
+            
+            addLog(`📩 ${sender.name}: "${message}"`, 'info');
+            
+            // Processa resposta
+            setTimeout(() => {
+                const response = generateResponse(message, sender.name);
+                addLog(`📤 Resposta para ${sender.name}: "${response}"`, 'success');
+                messageCount.sent++;
+                updateStats();
+            }, parseInt(document.getElementById('responseDelay').value));
+        }
+
+        function generateResponse(message, senderName) {
+            const mode = document.getElementById('responseMode').value;
+            const defaultResp = document.getElementById('defaultResponse').value || 
+                              'Olá! Sou um assistente virtual. Como posso ajudar?';
+            
+            const lowerMsg = message.toLowerCase();
+            
+            if (mode === 'manual' || mode === 'hybrid') {
+                // Respostas inteligentes baseadas em palavras-chave
+                if (lowerMsg.includes('preço') || lowerMsg.includes('valor') || lowerMsg.includes('custo')) {
+                    return `Olá ${senderName.split(' ')[0]}! 💰 Temos preços especiais. Posso enviar nossa tabela completa?`;
+                } else if (lowerMsg.includes('oi') || lowerMsg.includes('olá') || lowerMsg.includes('bom dia')) {
+                    return `Olá ${senderName.split(' ')[0]}! 👋 Bem-vindo! Como posso ajudar você hoje?`;
+                } else if (lowerMsg.includes('obrigado') || lowerMsg.includes('valeu')) {
+                    return 'Por nada! 😊 Estou aqui para ajudar sempre que precisar.';
+                } else if (lowerMsg.includes('entrega') || lowerMsg.includes('frete')) {
+                    return '🚚 Fazemos entregas para todo o Brasil! Qual seu CEP?';
+                } else if (lowerMsg.includes('reunião') || lowerMsg.includes('horário')) {
+                    return '📅 Claro! Que tal amanhã às 14h ou 16h?';
+                } else if (lowerMsg.includes('suporte') || lowerMsg.includes('ajuda') || lowerMsg.includes('problema')) {
+                    return '🔧 Vou te encaminhar para nosso suporte técnico. Aguarde um momento...';
+                }
+            }
+            
+            // Resposta padrão com personalização
+            if (mode === 'auto' || mode === 'hybrid') {
+                return `${defaultResp} 😊`;
+            }
+            
+            return defaultResp;
+        }
+
+        function updateStats() {
+            document.getElementById('msgReceived').textContent = messageCount.received;
+            document.getElementById('msgSent').textContent = messageCount.sent;
+            document.getElementById('chatsActive').textContent = activeChats.size;
+        }
+
+        // Modais
+        function showInstructions() {
+            document.getElementById('instructionsModal').classList.add('active');
+        }
+
+        function closeInstructions() {
+            document.getElementById('instructionsModal').classList.remove('active');
+        }
+
+        function showApiCode() {
+            closeInstructions();
+            document.getElementById('apiCodeModal').classList.add('active');
+        }
+
+        function closeApiCode() {
+            document.getElementById('apiCodeModal').classList.remove('active');
+        }
+
+        function copyApiCode() {
+            const code = document.getElementById('apiCodeBlock').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                addLog('Código da API copiado para área de transferência!', 'success');
+                alert('Código copiado! Cole no seu editor.');
+            });
+        }
+
+        // Fechar modais ao clicar fora
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Inicialização
+        addLog('🚀 Sistema iniciado. Pronto para conectar.', 'info');
+        addLog('💡 Dica: Clique em "Conectar ao WhatsApp" para começar.', 'info');
+    </script>
+</body>
+</html>

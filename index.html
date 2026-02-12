@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Bot Controller Pro</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>🍕 Pizzaria Bot - WhatsApp Web</title>
     <style>
         * {
             margin: 0;
@@ -14,40 +13,40 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             color: #fff;
-            overflow-x: hidden;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         header {
             text-align: center;
-            padding: 40px 0;
-            animation: fadeInDown 0.8s ease;
+            padding: 30px 0;
+            border-bottom: 2px solid #e94560;
+            margin-bottom: 30px;
         }
 
         h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2.5em;
+            color: #e94560;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
+            color: #a0a0a0;
+            margin-top: 10px;
+            font-size: 1.1em;
         }
 
         .main-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
+            gap: 25px;
         }
 
         @media (max-width: 768px) {
@@ -57,373 +56,48 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            animation: fadeInUp 0.8s ease;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
         }
 
         .card h2 {
+            color: #e94560;
             margin-bottom: 20px;
-            font-size: 1.5em;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .icon {
             font-size: 1.3em;
         }
 
-        .status-indicator {
+        .status {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
         }
 
-        .status-offline {
+        .status.offline {
             background: rgba(255, 71, 87, 0.2);
             color: #ff4757;
         }
 
-        .status-connecting {
-            background: rgba(241, 196, 15, 0.2);
-            color: #f1c40f;
-        }
-
-        .status-online {
+        .status.online {
             background: rgba(46, 213, 115, 0.2);
             color: #2ed573;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             animation: pulse 2s infinite;
-        }
-
-        .status-offline .status-dot {
-            background: #ff4757;
-        }
-
-        .status-connecting .status-dot {
-            background: #f1c40f;
-        }
-
-        .status-online .status-dot {
-            background: #2ed573;
-        }
-
-        button {
-            background: #25d366;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-
-        button:hover {
-            background: #128c7e;
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        button.danger {
-            background: #ff4757;
-            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
-        }
-
-        button.danger:hover {
-            background: #ff3344;
-            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
-        }
-
-        .config-section {
-            margin-top: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            opacity: 0.9;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.3);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-            font-family: inherit;
-        }
-
-        .log-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            margin-top: 20px;
-        }
-
-        .log-entry {
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 8px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .log-info {
-            background: rgba(52, 152, 219, 0.2);
-            border-left: 3px solid #3498db;
-        }
-
-        .log-success {
-            background: rgba(46, 213, 115, 0.2);
-            border-left: 3px solid #2ed573;
-        }
-
-        .log-error {
-            background: rgba(255, 71, 87, 0.2);
-            border-left: 3px solid #ff4757;
-        }
-
-        .log-warning {
-            background: rgba(241, 196, 15, 0.2);
-            border-left: 3px solid #f1c40f;
-        }
-
-        .timestamp {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.85em;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            margin-left: 10px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #25d366;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .feature-list {
-            list-style: none;
-            margin-top: 15px;
-        }
-
-        .feature-list li {
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            margin-bottom: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .feature-list li:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .feature-list li::before {
-            content: "✓";
-            color: #25d366;
-            font-weight: bold;
-        }
-
-        .qr-container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            color: #333;
-            margin-top: 20px;
-            display: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .qr-container.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .qr-wrapper {
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            display: inline-block;
-            border-radius: 10px;
-        }
-
-        .qr-instructions {
-            margin-top: 15px;
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-
-        .qr-instructions ol {
-            text-align: left;
-            margin: 10px 0 0 20px;
-        }
-
-        .qr-instructions li {
-            margin-bottom: 5px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #25d366;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
 
         @keyframes pulse {
@@ -431,470 +105,378 @@
             50% { opacity: 0.5; }
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .close-modal {
-            float: right;
-            font-size: 1.5em;
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
-        .close-modal:hover {
-            opacity: 1;
+        button:hover {
+            background: #ff6b6b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: #0f3460;
+        }
+
+        button.secondary:hover {
+            background: #1a4a7a;
+        }
+
+        .code-box {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #0f0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .code-box::before {
+            content: "CÓDIGO PARA COLAR NO CONSOLE";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #e94560;
+            padding: 2px 10px;
+            font-size: 0.7em;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .menu-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .price {
+            color: #e94560;
+            font-weight: bold;
         }
 
         .instructions {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            line-height: 1.6;
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid #e94560;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
         }
 
         .instructions h3 {
-            margin-top: 15px;
+            color: #e94560;
             margin-bottom: 10px;
-            color: #25d366;
         }
 
         .instructions ol {
             margin-left: 20px;
-            margin-top: 10px;
+            line-height: 1.8;
         }
 
         .instructions li {
-            margin-bottom: 8px;
-        }
-
-        .code-block {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            margin: 10px 0;
-            overflow-x: auto;
-            font-size: 0.85em;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .loading-spinner {
-            display: none;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #25d366;
-            animation: spin 1s ease-in-out infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin: 20px 0;
-            overflow: hidden;
-            display: none;
-        }
-
-        .progress-bar.active {
-            display: block;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #25d366;
-            width: 0%;
-            transition: width 0.3s ease;
-            animation: progress 3s ease-in-out;
-        }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        .connection-method {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .method-card {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .method-card:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-3px);
-        }
-
-        .method-card.selected {
-            border-color: #25d366;
-            background: rgba(37, 211, 102, 0.2);
-        }
-
-        .method-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .method-title {
-            font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .method-desc {
+        .log-container {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 15px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
             font-size: 0.85em;
-            opacity: 0.8;
+            margin-top: 15px;
+            border: 1px solid #333;
         }
 
-        .hidden {
-            display: none !important;
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .log-info { color: #3498db; }
+        .log-success { color: #2ed573; }
+        .log-error { color: #ff4757; }
+        .log-warning { color: #f1c40f; }
+
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .config-section {
+            margin-top: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toggle {
+            width: 50px;
+            height: 26px;
+            background: #333;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle.active {
+            background: #e94560;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        .toggle.active::after {
+            left: 26px;
+        }
+
+        .highlight {
+            background: rgba(233, 69, 96, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e94560;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .copy-btn:hover {
+            background: #e94560;
+            border-color: #e94560;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🤖 WhatsApp Bot Controller Pro</h1>
-            <p class="subtitle">Automação inteligente para WhatsApp Web</p>
+            <h1>🍕 Pizzaria Bot</h1>
+            <p class="subtitle">Atendimento automático para WhatsApp Web</p>
         </header>
 
         <div class="main-grid">
             <!-- Painel de Controle -->
             <div class="card">
-                <h2><span class="icon">⚡</span>Status do Bot</h2>
+                <h2>⚡ Controle do Bot</h2>
                 
-                <div id="statusIndicator" class="status-indicator status-offline">
+                <div id="statusIndicator" class="status offline">
                     <span class="status-dot"></span>
-                    <span id="statusText">Desconectado</span>
+                    <span id="statusText">Aguardando...</span>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-number" id="msgReceived">0</div>
-                        <div class="stat-label">Recebidas</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="msgSent">0</div>
-                        <div class="stat-label">Enviadas</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="chatsActive">0</div>
-                        <div class="stat-label">Chats Ativos</div>
-                    </div>
+                <div class="instructions">
+                    <h3>🚀 Como ativar:</h3>
+                    <ol>
+                        <li>Abra <span class="highlight">web.whatsapp.com</span> em outra aba</li>
+                        <li>Faça login com seu celular</li>
+                        <li>Clique no botão abaixo para gerar o código</li>
+                        <li>Copie o código e cole no <strong>Console</strong> do WhatsApp Web (F12)</li>
+                        <li>Pronto! O bot responderá automaticamente</li>
+                    </ol>
                 </div>
 
-                <div style="margin-top: 20px;">
-                    <button id="btnConnect" onclick="startConnection()">
-                        🔌 Conectar ao WhatsApp
-                    </button>
-                    <button id="btnDisconnect" class="danger" onclick="disconnectBot()" disabled>
-                        ⏹️ Desconectar
-                    </button>
-                    <button onclick="showInstructions()">
-                        📖 Como Usar
-                    </button>
-                </div>
+                <button onclick="generateBotCode()" id="btnGenerate">
+                    📝 Gerar Código do Bot
+                </button>
+                
+                <button onclick="openWhatsAppWeb()" class="secondary">
+                    🌐 Abrir WhatsApp Web
+                </button>
 
-                <!-- QR Code Container -->
-                <div class="qr-container" id="qrContainer">
-                    <h3>📱 Escaneie o QR Code</h3>
-                    <div class="loading-spinner" id="qrLoading"></div>
-                    <div class="progress-bar active" id="qrProgress">
-                        <div class="progress-fill"></div>
-                    </div>
-                    <div class="qr-wrapper" id="qrCodeWrapper">
-                        <!-- QR Code será gerado aqui -->
-                    </div>
-                    <div class="qr-instructions">
-                        <strong>Como conectar:</strong>
-                        <ol>
-                            <li>Abra o WhatsApp no seu celular</li>
-                            <li>Toque em <strong>Mais opções</strong> (⋮) ou <strong>Configurações</strong></li>
-                            <li>Selecione <strong>Aparelhos conectados</strong></li>
-                            <li>Toque em <strong>Conectar um aparelho</strong></li>
-                            <li>Aponte a câmera para este QR Code</li>
-                        </ol>
-                    </div>
-                    <button onclick="regenerateQR()" style="margin-top: 15px; background: #3498db;">
-                        🔄 Gerar Novo QR Code
-                    </button>
+                <div class="warning-box">
+                    ⚠️ Mantenha esta aba aberta para ver os logs
                 </div>
             </div>
 
-            <!-- Configurações -->
+            <!-- Configurações da Pizzaria -->
             <div class="card">
-                <h2><span class="icon">⚙️</span>Configurações</h2>
+                <h2>🍕 Cardápio & Config</h2>
                 
-                <div class="config-section">
-                    <div class="input-group">
-                        <label>Método de Conexão</label>
-                        <div class="connection-method">
-                            <div class="method-card selected" onclick="selectMethod('web')" id="methodWeb">
-                                <div class="method-icon">🌐</div>
-                                <div class="method-title">WhatsApp Web</div>
-                                <div class="method-desc">Via navegador</div>
-                            </div>
-                            <div class="method-card" onclick="selectMethod('api')" id="methodApi">
-                                <div class="method-icon">🔌</div>
-                                <div class="method-title">API Local</div>
-                                <div class="method-desc">Servidor Node.js</div>
-                            </div>
-                        </div>
+                <div class="menu-preview">
+                    <h3 style="margin-bottom: 10px; color: #e94560;">Pizzas Tradicionais</h3>
+                    <div class="menu-item">
+                        <span>🧀 Mussarela</span>
+                        <span class="price">R$ 35,00</span>
                     </div>
-
-                    <div class="input-group">
-                        <label>Modo de Resposta</label>
-                        <select id="responseMode">
-                            <option value="auto">Automático (IA Básica)</option>
-                            <option value="manual">Manual (Respostas Pré-definidas)</option>
-                            <option value="hybrid">Híbrido</option>
-                        </select>
+                    <div class="menu-item">
+                        <span>🍖 Calabresa</span>
+                        <span class="price">R$ 38,00</span>
                     </div>
-
-                    <div class="input-group">
-                        <label>Delay de Resposta (ms)</label>
-                        <input type="number" id="responseDelay" value="1000" min="0" max="10000">
+                    <div class="menu-item">
+                        <span>🍗 Frango c/ Catupiry</span>
+                        <span class="price">R$ 42,00</span>
                     </div>
-
-                    <div class="input-group">
-                        <label>Resposta Padrão</label>
-                        <textarea id="defaultResponse" placeholder="Olá! Sou um assistente virtual. Como posso ajudar?"></textarea>
+                    <div class="menu-item">
+                        <span>🥓 Portuguesa</span>
+                        <span class="price">R$ 40,00</span>
                     </div>
-
-                    <div class="input-group">
-                        <label>
-                            Responder apenas contatos salvos
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="onlyContacts">
-                                <span class="slider"></span>
-                            </label>
-                        </label>
-                    </div>
-
-                    <div class="input-group">
-                        <label>
-                            Modo "Digitando..."
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="typingMode" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </label>
+                    <div class="menu-item">
+                        <span>🍫 Chocolate</span>
+                        <span class="price">R$ 45,00</span>
                     </div>
                 </div>
+
+                <div class="config-section">
+                    <div class="config-item">
+                        <span>Resposta automática</span>
+                        <div class="toggle active" onclick="toggleConfig(this, 'autoReply')"></div>
+                    </div>
+                    <div class="config-item">
+                        <span>Modo "Digitando..."</span>
+                        <div class="toggle active" onclick="toggleConfig(this, 'typing')"></div>
+                    </div>
+                    <div class="config-item">
+                        <span>Apenas contatos salvos</span>
+                        <div class="toggle" onclick="toggleConfig(this, 'onlyContacts')"></div>
+                    </div>
+                    <div class="config-item">
+                        <span>Ignorar grupos</span>
+                        <div class="toggle active" onclick="toggleConfig(this, 'ignoreGroups')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Código Gerado -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>💻 Código para WhatsApp Web</h2>
+                <p style="margin-bottom: 10px; color: #aaa;">
+                    Copie este código e cole no console do WhatsApp Web (pressione F12 → Console)
+                </p>
+                
+                <div class="code-box" id="codeBox">
+                    <button class="copy-btn" onclick="copyCode()">📋 Copiar</button>
+                    <code id="botCode">// Clique em "Gerar Código do Bot" para criar o código...</code>
+                </div>
+
+                <button onclick="copyCode()" style="width: auto; display: inline-block; margin-right: 10px;">
+                    📋 Copiar Código
+                </button>
+                <button onclick="clearCode()" class="secondary" style="width: auto; display: inline-block;">
+                    🗑️ Limpar
+                </button>
             </div>
 
             <!-- Logs -->
             <div class="card" style="grid-column: 1 / -1;">
-                <h2><span class="icon">📊</span>Logs de Atividade</h2>
+                <h2>📊 Logs de Atendimento</h2>
                 <div class="log-container" id="logContainer">
                     <div class="log-entry log-info">
-                        <span class="timestamp">[00:00:00]</span> Sistema iniciado. Aguardando conexão...
+                        <span class="timestamp">[Sistema]</span> Aguardando ativação do bot...
                     </div>
                 </div>
-                <button onclick="clearLogs()" style="margin-top: 10px; width: auto; padding: 10px 20px;">
+                <button onclick="clearLogs()" style="margin-top: 10px; width: auto;">
                     🗑️ Limpar Logs
                 </button>
             </div>
         </div>
-
-        <!-- Recursos -->
-        <div class="card" style="margin-top: 30px;">
-            <h2><span class="icon">🚀</span>Recursos Disponíveis</h2>
-            <ul class="feature-list">
-                <li>QR Code dinâmico para conexão rápida</li>
-                <li>Respostas automáticas inteligentes baseadas em palavras-chave</li>
-                <li>Detecção de mensagens recebidas em tempo real</li>
-                <li>Simulação de "digitando..." para respostas naturais</li>
-                <li>Histórico de conversas e estatísticas detalhadas</li>
-                <li>Filtro por contatos salvos/não salvos</li>
-                <li>Respostas personalizáveis por tipo de mensagem</li>
-                <li>Modo silencioso para grupos</li>
-                <li>Anti-spam com limites de mensagens</li>
-                <li>Reconexão automática em caso de queda</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Modal de Instruções -->
-    <div class="modal" id="instructionsModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeInstructions()">&times;</span>
-            <h2>📖 Como Usar o Bot</h2>
-            
-            <div class="instructions">
-                <h3>🔧 Método 1: WhatsApp Web (Mais Fácil)</h3>
-                <ol>
-                    <li>Clique em <strong>"Conectar ao WhatsApp"</strong> neste painel</li>
-                    <li>Escaneie o QR Code com seu celular</li>
-                    <li>Aguarde a conexão ser estabelecida</li>
-                    <li>O bot começará a responder automaticamente</li>
-                </ol>
-
-                <h3>💻 Método 2: API Local (Mais Estável)</h3>
-                <ol>
-                    <li>Instale o Node.js em seu computador</li>
-                    <li>Execute no terminal: <code>npm install whatsapp-web.js</code></li>
-                    <li>Cole o código da API (disponível ao clicar em conectar)</li>
-                    <li>Escaneie o QR Code no terminal</li>
-                </ol>
-
-                <h3>⚠️ Avisos Importantes</h3>
-                <ul style="margin-left: 20px; margin-top: 10px;">
-                    <li>Mantenha o celular conectado à internet</li>
-                    <li>Não feche a aba do navegador (se usar método Web)</li>
-                    <li>Use com moderação para evitar bloqueios</li>
-                    <li>Respeite os limites de mensagens do WhatsApp</li>
-                </ul>
-            </div>
-            
-            <button onclick="showApiCode()" style="margin-top: 20px; background: #3498db;">
-                📋 Ver Código da API
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal do Código API -->
-    <div class="modal" id="apiCodeModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close-modal" onclick="closeApiCode()">&times;</span>
-            <h2>🔌 Código da API (Node.js)</h2>
-            
-            <div class="instructions">
-                <p><strong>1.</strong> Instale as dependências:</p>
-                <div class="code-block">npm install whatsapp-web.js qrcode-terminal express</div>
-                
-                <p><strong>2.</strong> Crie o arquivo <code>bot.js</code>:</p>
-                <div class="code-block" id="apiCodeBlock">
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
-const express = require('express');
-
-const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: { headless: false }
-});
-
-client.on('qr', (qr) => {
-    qrcode.generate(qr, { small: true });
-    console.log('QR Code gerado! Escaneie com seu celular.');
-});
-
-client.on('ready', () => {
-    console.log('Bot conectado e pronto!');
-});
-
-client.on('message', async (msg) => {
-    // Lógica de resposta automática
-    if (!msg.fromMe) {
-        const chat = await msg.getChat();
-        
-        // Verifica se é contato salvo (configurável)
-        const contact = await msg.getContact();
-        
-        console.log(`Mensagem de ${contact.pushname}: ${msg.body}`);
-        
-        // Resposta automática
-        setTimeout(() => {
-            msg.reply('Olá! Sou um assistente virtual. Em breve responderemos.');
-        }, 1000);
-    }
-});
-
-client.initialize();
-
-// API HTTP para controle externo
-const app = express();
-app.use(express.json());
-
-app.get('/status', (req, res) => {
-    res.json({ status: client.info ? 'connected' : 'disconnected' });
-});
-
-app.post('/send', async (req, res) => {
-    const { number, message } = req.body;
-    const chatId = number.includes('@c.us') ? number : `${number}@c.us`;
-    await client.sendMessage(chatId, message);
-    res.json({ success: true });
-});
-
-app.listen(3000, () => {
-    console.log('API rodando em http://localhost:3000');
-});
-                </div>
-                
-                <p><strong>3.</strong> Execute:</p>
-                <div class="code-block">node bot.js</div>
-            </div>
-            
-            <button onclick="copyApiCode()" style="margin-top: 20px;">
-                📋 Copiar Código
-            </button>
-        </div>
     </div>
 
     <script>
-        // Estado do sistema
-        let isConnected = false;
-        let isConnecting = false;
-        let messageCount = { received: 0, sent: 0 };
-        let activeChats = new Set();
-        let botInterval = null;
-        let currentMethod = 'web';
-        let qrCodeObj = null;
+        // Configurações
+        let config = {
+            autoReply: true,
+            typing: true,
+            onlyContacts: false,
+            ignoreGroups: true
+        };
+
+        // Cardápio da pizzaria
+        const menu = {
+            pizzas: [
+                { nome: 'Mussarela', preco: 35, desc: 'Molho de tomate, mussarela e orégano' },
+                { nome: 'Calabresa', preco: 38, desc: 'Molho, mussarela, calabresa e cebola' },
+                { nome: 'Frango c/ Catupiry', preco: 42, desc: 'Molho, frango desfiado e catupiry' },
+                { nome: 'Portuguesa', preco: 40, desc: 'Presunto, ovos, cebola, azeitona e ervilha' },
+                { nome: 'Quatro Queijos', preco: 45, desc: 'Mussarela, provolone, parmesão e catupiry' },
+                { nome: 'Chocolate', preco: 45, desc: 'Chocolate ao leite com granulado' }
+            ],
+            bebidas: [
+                { nome: 'Coca-Cola 2L', preco: 12 },
+                { nome: 'Guaraná 2L', preco: 10 },
+                { nome: 'Suco Natural', preco: 8 }
+            ]
+        };
 
         // Logger
         function addLog(message, type = 'info') {
             const container = document.getElementById('logContainer');
-            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            const time = new Date().toLocaleTimeString('pt-BR');
             const entry = document.createElement('div');
             entry.className = `log-entry log-${type}`;
-            entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            entry.innerHTML = `<span class="timestamp">[${time}]</span> ${message}`;
             container.appendChild(entry);
             container.scrollTop = container.scrollHeight;
         }
@@ -904,276 +486,239 @@ app.listen(3000, () => {
             addLog('Logs limpos', 'info');
         }
 
-        // Seleção de método
-        function selectMethod(method) {
-            currentMethod = method;
-            document.querySelectorAll('.method-card').forEach(card => {
-                card.classList.remove('selected');
+        // Toggle config
+        function toggleConfig(element, key) {
+            element.classList.toggle('active');
+            config[key] = element.classList.contains('active');
+            addLog(`Configuração "${key}" alterada para: ${config[key]}`, 'info');
+        }
+
+        // Abrir WhatsApp Web
+        function openWhatsAppWeb() {
+            window.open('https://web.whatsapp.com', '_blank');
+            addLog('Abrindo WhatsApp Web...', 'info');
+        }
+
+        // Gerar código do bot
+        function generateBotCode() {
+            const code = `
+// 🍕 PIZZARIA BOT - Cole todo este código no Console do WhatsApp Web (F12)
+// E pressione Enter. O bot começará a funcionar imediatamente!
+
+(function() {
+    'use strict';
+    
+    console.log('🍕 Pizzaria Bot iniciando...');
+    
+    // CONFIGURAÇÕES
+    const CONFIG = {
+        autoReply: ${config.autoReply},
+        typing: ${config.typing},
+        onlyContacts: ${config.onlyContacts},
+        ignoreGroups: ${config.ignoreGroups},
+        delayMin: 1000,
+        delayMax: 3000
+    };
+    
+    // CARDÁPIO
+    const MENU = {
+        pizzas: [
+            { nome: 'Mussarela', preco: 35, emoji: '🧀' },
+            { nome: 'Calabresa', preco: 38, emoji: '🍖' },
+            { nome: 'Frango c/ Catupiry', preco: 42, emoji: '🍗' },
+            { nome: 'Portuguesa', preco: 40, emoji: '🥓' },
+            { nome: 'Quatro Queijos', preco: 45, emoji: '🧀' },
+            { nome: 'Chocolate', preco: 45, emoji: '🍫' }
+        ],
+        bebidas: [
+            { nome: 'Coca-Cola 2L', preco: 12, emoji: '🥤' },
+            { nome: 'Guaraná 2L', preco: 10, emoji: '🥤' },
+            { nome: 'Suco Natural', preco: 8, emoji: '🧃' }
+        ]
+    };
+    
+    // ESTADO
+    let atendimentos = {};
+    let isRunning = true;
+    
+    // FUNÇÃO: Enviar mensagem
+    async function sendMessage(chatId, text) {
+        try {
+            // Simula "digitando..."
+            if (CONFIG.typing) {
+                const chat = await window.Store.Chat.find(chatId);
+                chat.markComposing();
+                await sleep(random(CONFIG.delayMin, CONFIG.delayMax));
+            }
+            
+            // Envia a mensagem
+            const msg = await window.Store.Chat.find(chatId);
+            await msg.sendMessage(text);
+            
+            console.log('✅ Enviado:', text.substring(0, 50) + '...');
+            return true;
+        } catch (err) {
+            console.error('❌ Erro ao enviar:', err);
+            return false;
+        }
+    }
+    
+    // FUNÇÃO: Processar mensagem recebida
+    async function processMessage(message) {
+        if (!isRunning) return;
+        if (message.fromMe) return; // Ignora mensagens enviadas por mim
+        
+        const chatId = message.from;
+        const text = message.body.toLowerCase();
+        const contact = await message.getContact();
+        const chat = await message.getChat();
+        
+        // Ignora grupos se configurado
+        if (CONFIG.ignoreGroups && chat.isGroup) return;
+        
+        // Verifica se é contato salvo
+        if (CONFIG.onlyContacts && !contact.isMyContact) return;
+        
+        // Inicializa atendimento
+        if (!atendimentos[chatId]) {
+            atendimentos[chatId] = { etapa: 'inicio', pedido: [] };
+        }
+        
+        const atendimento = atendimentos[chatId];
+        let resposta = '';
+        
+        // LÓGICA DO CARDÁPIO/ATENDIMENTO
+        if (text.includes('oi') || text.includes('olá') || text.includes('ola') || text.includes('bom dia') || text.includes('boa tarde') || text.includes('boa noite')) {
+            resposta = \`🍕 *Bem-vindo à Pizzaria!*\n\nOlá! Sou o assistente virtual. Como posso ajudar?\n\n*Digite o número da opção desejada:*\n\n1️⃣ - Ver cardápio de pizzas\n2️⃣ - Ver bebidas\n3️⃣ - Fazer um pedido\n4️⃣ - Ver promoções\n5️⃣ - Falar com atendente\`;
+            atendimento.etapa = 'menu';
+        }
+        else if (text === '1' || text.includes('cardápio') || text.includes('pizza')) {
+            resposta = '📋 *Cardápio de Pizzas*\\n\\n';
+            MENU.pizzas.forEach((pizza, index) => {
+                resposta += \`\${pizza.emoji} *\${index + 1}. \${pizza.nome}* - R$ \${pizza.preco},00\\n\`;
             });
-            document.getElementById(`method${method.charAt(0).toUpperCase() + method.slice(1)}`).classList.add('selected');
-            
-            addLog(`Método de conexão alterado para: ${method === 'web' ? 'WhatsApp Web' : 'API Local'}`, 'info');
+            resposta += '\\n_Digite o número da pizza para adicionar ao pedido_ 🛒';
+            atendimento.etapa = 'escolhendo_pizza';
         }
-
-        // Geração de QR Code
-        function generateQRCode() {
-            const wrapper = document.getElementById('qrCodeWrapper');
-            wrapper.innerHTML = '';
-            
-            // Gera um QR code de exemplo (em produção, seria o QR real do WhatsApp)
-            const qrData = `whatsapp-web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            
-            qrCodeObj = new QRCode(wrapper, {
-                text: qrData,
-                width: 200,
-                height: 200,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+        else if (text === '2' || text.includes('bebida')) {
+            resposta = '🥤 *Bebidas*\\n\\n';
+            MENU.bebidas.forEach((bebida, index) => {
+                resposta += \`\${bebida.emoji} *\${index + 1}. \${bebida.nome}* - R$ \${bebida.preco},00\\n\`;
             });
-            
-            addLog('QR Code gerado. Aguardando escaneamento...', 'warning');
+            resposta += '\\n_Digite o número da bebida para adicionar_ 🛒';
+            atendimento.etapa = 'escolhendo_bebida';
         }
-
-        function regenerateQR() {
-            const wrapper = document.getElementById('qrCodeWrapper');
-            wrapper.innerHTML = '';
-            document.getElementById('qrLoading').style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById('qrLoading').style.display = 'none';
-                generateQRCode();
-                addLog('Novo QR Code gerado', 'info');
-            }, 1500);
+        else if (text === '3' || text.includes('pedido')) {
+            resposta = '🛒 *Novo Pedido*\\n\\nPara fazer seu pedido, me diga:\\n1. Qual pizza (nome ou número)\\n2. Tamanho: P, M ou G\\n3. Endereço de entrega\\n4. Forma de pagamento\\n\\n_Exemplo: "Quero uma Calabresa grande, entrega na Rua das Flores 123, pagamento em dinheiro"_';
+            atendimento.etapa = 'pedido';
         }
-
-        // Controles de conexão
-        function startConnection() {
-            if (isConnecting || isConnected) return;
-            
-            isConnecting = true;
-            updateStatus('connecting');
-            
-            document.getElementById('btnConnect').disabled = true;
-            document.getElementById('qrContainer').classList.add('active');
-            document.getElementById('qrLoading').style.display = 'block';
-            document.getElementById('qrCodeWrapper').style.display = 'none';
-            
-            addLog('Iniciando conexão com WhatsApp...', 'warning');
-            
-            // Simula o tempo de geração do QR
-            setTimeout(() => {
-                document.getElementById('qrLoading').style.display = 'none';
-                document.getElementById('qrCodeWrapper').style.display = 'block';
-                document.getElementById('qrProgress').style.display = 'none';
-                generateQRCode();
-                
-                // Simula espera pelo escaneamento
-                simulateQRScan();
-            }, 2000);
+        else if (text === '4' || text.includes('promoção') || text.includes('promocao')) {
+            resposta = '🎉 *PROMOÇÕES DO DIA* 🎉\\n\\n✨ *Combo Família:*\\n2 Pizzas Grandes + 1 Refri 2L = *R$ 89,90*\\n\\n✨ *Pizza em Dobro:*\\nNa compra de 1 pizza G, a segunda sai *50% OFF*\\n\\n✨ *Taxa FREE:*\\nPedidos acima de R$ 60 = *Entrega Grátis* 🚚\\n\\n_Digite "quero promoção" para aproveitar!_';
         }
-
-        function simulateQRScan() {
-            // Em um sistema real, aqui verificaria se o QR foi escaneado
-            // Por enquanto, simulamos após 10 segundos
-            setTimeout(() => {
-                if (isConnecting) {
-                    completeConnection();
-                }
-            }, 8000);
+        else if (text === '5' || text.includes('atendente') || text.includes('humano') || text.includes('pessoa')) {
+            resposta = '👨‍💼 *Encaminhando para atendente...*\\n\\nAguarde um momento, por favor. Um de nossos atendentes irá te atender em breve.\\n\\n⏰ _Horário de atendimento: 18h às 23h_';
+            atendimento.etapa = 'esperando_atendente';
         }
-
-        function completeConnection() {
-            isConnecting = false;
-            isConnected = true;
-            updateStatus('online');
-            
-            addLog('QR Code escaneado! Conectando...', 'success');
-            
-            setTimeout(() => {
-                document.getElementById('qrContainer').classList.remove('active');
-                addLog('Bot conectado com sucesso!', 'success');
-                startBot();
-            }, 2000);
+        else if (text.includes('obrigado') || text.includes('valeu') || text.includes('agradeço')) {
+            resposta = '😊 *Por nada!* Ficamos felizes em atender você!\\n\\nSe precisar de mais alguma coisa, é só chamar. Bom apetite! 🍕';
         }
-
-        function disconnectBot() {
-            if (!isConnected) return;
-            
-            isConnected = false;
-            isConnecting = false;
-            updateStatus('offline');
-            stopBot();
-            
-            document.getElementById('qrContainer').classList.remove('active');
-            document.getElementById('btnConnect').disabled = false;
-            
-            addLog('Bot desconectado', 'warning');
-            
-            // Limpa o QR
-            if (qrCodeObj) {
-                document.getElementById('qrCodeWrapper').innerHTML = '';
-                qrCodeObj = null;
+        else if (text.includes('tchau') || text.includes('até logo') || text.includes('ate logo')) {
+            resposta = '👋 *Até logo!* Obrigado por escolher nossa pizzaria! Volte sempre! 🍕';
+            delete atendimentos[chatId];
+        }
+        else {
+            // Resposta padrão para mensagens não reconhecidas
+            resposta = '🤔 Não entendi bem...\\n\\nDigite *"oi"* para ver as opções ou escolha:\\n\\n1️⃣ Cardápio\\n2️⃣ Bebidas\\n3️⃣ Fazer pedido\\n4️⃣ Promoções\\n5️⃣ Falar com atendente';
+        }
+        
+        // Envia resposta
+        if (resposta && CONFIG.autoReply) {
+            await sendMessage(chatId, resposta);
+        }
+    }
+    
+    // FUNÇÃO: Observar novas mensagens
+    function startObserver() {
+        // Verifica se o Store do WhatsApp está disponível
+        if (typeof window.Store === 'undefined') {
+            console.error('❌ Store não encontrada. Certifique-se de estar no WhatsApp Web.');
+            return false;
+        }
+        
+        console.log('👀 Observando mensagens...');
+        
+        // Hook no processamento de mensagens
+        window.Store.Msg.on('add', async (msg) => {
+            if (msg.isNewMsg && !msg.fromMe) {
+                console.log('📩 Nova mensagem:', msg.body);
+                await processMessage(msg);
             }
+        });
+        
+        return true;
+    }
+    
+    // UTILITÁRIOS
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    function random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    // INICIALIZAÇÃO
+    if (startObserver()) {
+        console.log('✅ Pizzaria Bot ativo!');
+        console.log('📋 Comandos disponíveis:');
+        console.log('   window.pizzariaBot.stop() - Para o bot');
+        console.log('   window.pizzariaBot.start() - Inicia o bot');
+        console.log('   window.pizzariaBot.status - Ver status');
+        
+        // Expõe controle global
+        window.pizzariaBot = {
+            stop: () => { isRunning = false; console.log('🛑 Bot parado'); },
+            start: () => { isRunning = true; console.log('▶️ Bot iniciado'); },
+            status: () => console.log('Status:', isRunning ? 'Rodando' : 'Parado', '| Atendimentos:', Object.keys(atendimentos).length),
+            config: CONFIG
+        };
+    } else {
+        console.error('❌ Falha ao iniciar. Recarregue a página e tente novamente.');
+    }
+    
+})();`;
+
+            document.getElementById('botCode').textContent = code;
+            addLog('Código gerado com sucesso! Copie e cole no WhatsApp Web.', 'success');
+            
+            // Atualiza status
+            document.getElementById('statusIndicator').className = 'status online';
+            document.getElementById('statusText').textContent = 'Código pronto!';
         }
 
-        function updateStatus(status) {
-            const indicator = document.getElementById('statusIndicator');
-            const text = document.getElementById('statusText');
-            const btnDisconnect = document.getElementById('btnDisconnect');
-            
-            indicator.className = 'status-indicator';
-            
-            switch(status) {
-                case 'online':
-                    indicator.classList.add('status-online');
-                    text.textContent = 'Online';
-                    btnDisconnect.disabled = false;
-                    break;
-                case 'connecting':
-                    indicator.classList.add('status-connecting');
-                    text.textContent = 'Conectando...';
-                    btnDisconnect.disabled = false;
-                    break;
-                default:
-                    indicator.classList.add('status-offline');
-                    text.textContent = 'Desconectado';
-                    btnDisconnect.disabled = true;
-            }
-        }
-
-        // Lógica do Bot
-        function startBot() {
-            addLog('Sistema de monitoramento iniciado', 'success');
-            addLog('Aguardando mensagens...', 'info');
-            
-            // Simula recebimento de mensagens
-            botInterval = setInterval(() => {
-                if (Math.random() < 0.15) {
-                    simulateMessage();
-                }
-            }, 6000);
-        }
-
-        function stopBot() {
-            if (botInterval) {
-                clearInterval(botInterval);
-                botInterval = null;
-            }
-        }
-
-        function simulateMessage() {
-            const senders = [
-                { name: 'João Silva', number: '5511999999999' },
-                { name: 'Maria Oliveira', number: '5511888888888' },
-                { name: 'Cliente Novo', number: '5511777777777' },
-                { name: 'Grupo Família', number: '5511666666666@g.us' },
-                { name: 'Amigo', number: '5511555555555' }
-            ];
-            
-            const messages = [
-                'Oi, tudo bem?',
-                'Qual o preço do produto?',
-                'Obrigado pela ajuda!',
-                'Podemos marcar uma reunião?',
-                'Gostaria de mais informações',
-                'Vocês entregam em qual região?',
-                'Bom dia!',
-                'Preciso de suporte técnico'
-            ];
-            
-            const sender = senders[Math.floor(Math.random() * senders.length)];
-            const message = messages[Math.floor(Math.random() * messages.length)];
-            
-            messageCount.received++;
-            activeChats.add(sender.number);
-            updateStats();
-            
-            addLog(`📩 ${sender.name}: "${message}"`, 'info');
-            
-            // Processa resposta
-            setTimeout(() => {
-                const response = generateResponse(message, sender.name);
-                addLog(`📤 Resposta para ${sender.name}: "${response}"`, 'success');
-                messageCount.sent++;
-                updateStats();
-            }, parseInt(document.getElementById('responseDelay').value));
-        }
-
-        function generateResponse(message, senderName) {
-            const mode = document.getElementById('responseMode').value;
-            const defaultResp = document.getElementById('defaultResponse').value || 
-                              'Olá! Sou um assistente virtual. Como posso ajudar?';
-            
-            const lowerMsg = message.toLowerCase();
-            
-            if (mode === 'manual' || mode === 'hybrid') {
-                // Respostas inteligentes baseadas em palavras-chave
-                if (lowerMsg.includes('preço') || lowerMsg.includes('valor') || lowerMsg.includes('custo')) {
-                    return `Olá ${senderName.split(' ')[0]}! 💰 Temos preços especiais. Posso enviar nossa tabela completa?`;
-                } else if (lowerMsg.includes('oi') || lowerMsg.includes('olá') || lowerMsg.includes('bom dia')) {
-                    return `Olá ${senderName.split(' ')[0]}! 👋 Bem-vindo! Como posso ajudar você hoje?`;
-                } else if (lowerMsg.includes('obrigado') || lowerMsg.includes('valeu')) {
-                    return 'Por nada! 😊 Estou aqui para ajudar sempre que precisar.';
-                } else if (lowerMsg.includes('entrega') || lowerMsg.includes('frete')) {
-                    return '🚚 Fazemos entregas para todo o Brasil! Qual seu CEP?';
-                } else if (lowerMsg.includes('reunião') || lowerMsg.includes('horário')) {
-                    return '📅 Claro! Que tal amanhã às 14h ou 16h?';
-                } else if (lowerMsg.includes('suporte') || lowerMsg.includes('ajuda') || lowerMsg.includes('problema')) {
-                    return '🔧 Vou te encaminhar para nosso suporte técnico. Aguarde um momento...';
-                }
+        // Copiar código
+        function copyCode() {
+            const code = document.getElementById('botCode').textContent;
+            if (code.includes('Clique em')) {
+                alert('Gere o código primeiro!');
+                return;
             }
             
-            // Resposta padrão com personalização
-            if (mode === 'auto' || mode === 'hybrid') {
-                return `${defaultResp} 😊`;
-            }
-            
-            return defaultResp;
-        }
-
-        function updateStats() {
-            document.getElementById('msgReceived').textContent = messageCount.received;
-            document.getElementById('msgSent').textContent = messageCount.sent;
-            document.getElementById('chatsActive').textContent = activeChats.size;
-        }
-
-        // Modais
-        function showInstructions() {
-            document.getElementById('instructionsModal').classList.add('active');
-        }
-
-        function closeInstructions() {
-            document.getElementById('instructionsModal').classList.remove('active');
-        }
-
-        function showApiCode() {
-            closeInstructions();
-            document.getElementById('apiCodeModal').classList.add('active');
-        }
-
-        function closeApiCode() {
-            document.getElementById('apiCodeModal').classList.remove('active');
-        }
-
-        function copyApiCode() {
-            const code = document.getElementById('apiCodeBlock').textContent;
             navigator.clipboard.writeText(code).then(() => {
-                addLog('Código da API copiado para área de transferência!', 'success');
-                alert('Código copiado! Cole no seu editor.');
+                addLog('Código copiado para área de transferência!', 'success');
+                alert('✅ Código copiado!\n\nAgora:\n1. Abra web.whatsapp.com\n2. Aperte F12\n3. Cole no Console\n4. Aperte Enter');
             });
         }
 
-        // Fechar modais ao clicar fora
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-            }
+        function clearCode() {
+            document.getElementById('botCode').textContent = '// Clique em "Gerar Código do Bot" para criar o código...';
+            document.getElementById('statusIndicator').className = 'status offline';
+            document.getElementById('statusText').textContent = 'Aguardando...';
+            addLog('Código limpo', 'info');
         }
 
         // Inicialização
-        addLog('🚀 Sistema iniciado. Pronto para conectar.', 'info');
-        addLog('💡 Dica: Clique em "Conectar ao WhatsApp" para começar.', 'info');
+        addLog('🍕 Pizzaria Bot pronto! Clique em "Gerar Código" para começar.', 'info');
     </script>
 </body>
 </html>

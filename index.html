@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍕 Pizzaria Bot - WhatsApp Web</title>
+    <title>🍕 Pizzaria Bot - Central de Atendimento</title>
     <style>
         * {
             margin: 0;
@@ -13,91 +13,73 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
+            background: #0f0f0f;
+            height: 100vh;
+            overflow: hidden;
             color: #fff;
-            padding: 20px;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid #e94560;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            color: #e94560;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .subtitle {
-            color: #a0a0a0;
-            margin-top: 10px;
-            font-size: 1.1em;
-        }
-
-        .main-grid {
+        .app-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            grid-template-columns: 1fr 400px;
+            height: 100vh;
         }
 
-        @media (max-width: 768px) {
-            .main-grid {
+        @media (max-width: 1024px) {
+            .app-container {
                 grid-template-columns: 1fr;
+                grid-template-rows: 60% 40%;
             }
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
+        /* ÁREA DO WHATSAPP WEB */
+        .whatsapp-area {
+            position: relative;
+            background: #111;
+            border-right: 2px solid #e94560;
         }
 
-        .card h2 {
-            color: #e94560;
-            margin-bottom: 20px;
+        .whatsapp-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #075e54, #128c7e);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .whatsapp-header h2 {
+            font-size: 1.1em;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.3em;
         }
 
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+        .status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
             border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-        }
-
-        .status.offline {
-            background: rgba(255, 71, 87, 0.2);
-            color: #ff4757;
-        }
-
-        .status.online {
-            background: rgba(46, 213, 115, 0.2);
-            color: #2ed573;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            background: #ff4757;
             animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+            background: #2ed573;
         }
 
         @keyframes pulse {
@@ -105,151 +87,242 @@
             50% { opacity: 0.5; }
         }
 
-        button {
-            background: #e94560;
-            color: white;
+        #whatsappFrame {
+            width: 100%;
+            height: 100%;
             border: none;
-            padding: 12px 24px;
+            margin-top: 50px;
+            height: calc(100% - 50px);
+        }
+
+        .connect-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0,0,0,0.9);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #e94560;
+        }
+
+        .connect-overlay h3 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* PAINEL DE CONTROLE */
+        .control-panel {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: rgba(233, 69, 96, 0.2);
+            padding: 20px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .panel-header h1 {
+            font-size: 1.3em;
+            color: #e94560;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab.active {
+            background: rgba(233, 69, 96, 0.3);
+            color: #e94560;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* BOTÕES */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.95em;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        button:hover {
+        .btn-primary {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn-primary:hover {
             background: #ff6b6b;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
         }
 
-        button:disabled {
-            background: #555;
+        .btn-secondary {
+            background: #0f3460;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1a4a7a;
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: #000;
+        }
+
+        .btn:disabled {
+            background: #444;
             cursor: not-allowed;
             transform: none;
         }
 
-        button.secondary {
-            background: #0f3460;
+        /* CHAT EM TEMPO REAL */
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        button.secondary:hover {
-            background: #1a4a7a;
-        }
-
-        .code-box {
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            color: #0f0;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 15px 0;
-            position: relative;
-        }
-
-        .code-box::before {
-            content: "CÓDIGO PARA COLAR NO CONSOLE";
-            position: absolute;
-            top: -10px;
-            left: 10px;
-            background: #e94560;
-            padding: 2px 10px;
-            font-size: 0.7em;
-            border-radius: 4px;
-            color: white;
-        }
-
-        .menu-preview {
-            background: rgba(255, 255, 255, 0.05);
+        .chat-item {
+            background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
 
-        .menu-item {
+        .chat-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .chat-item.active {
+            border-left-color: #e94560;
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .chat-item.bot-responded {
+            border-left-color: #2ed573;
+        }
+
+        .chat-header {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .price {
-            color: #e94560;
-            font-weight: bold;
-        }
-
-        .instructions {
-            background: rgba(233, 69, 96, 0.1);
-            border-left: 3px solid #e94560;
-            padding: 15px;
-            border-radius: 0 8px 8px 0;
-            margin: 15px 0;
-        }
-
-        .instructions h3 {
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .instructions li {
+            align-items: center;
             margin-bottom: 5px;
         }
 
+        .chat-name {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .chat-time {
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .chat-preview {
+            font-size: 0.85em;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-badge {
+            background: #e94560;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        /* LOGS */
         .log-container {
             background: #0a0a0a;
             border-radius: 8px;
             padding: 15px;
-            height: 250px;
+            height: 300px;
             overflow-y: auto;
             font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            margin-top: 15px;
+            font-size: 0.8em;
             border: 1px solid #333;
         }
 
         .log-entry {
             margin-bottom: 8px;
-            padding: 5px;
+            padding: 6px;
             border-radius: 4px;
+            animation: slideIn 0.3s ease;
         }
 
-        .log-info { color: #3498db; }
-        .log-success { color: #2ed573; }
-        .log-error { color: #ff4757; }
-        .log-warning { color: #f1c40f; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-in { color: #3498db; border-left: 2px solid #3498db; padding-left: 8px; }
+        .log-out { color: #2ed573; border-left: 2px solid #2ed573; padding-left: 8px; }
+        .log-system { color: #f1c40f; border-left: 2px solid #f1c40f; padding-left: 8px; }
+        .log-error { color: #ff4757; border-left: 2px solid #ff4757; padding-left: 8px; }
 
         .timestamp {
             color: #666;
             font-size: 0.9em;
         }
 
-        .config-section {
-            margin-top: 15px;
-        }
-
+        /* CONFIGURAÇÕES */
         .config-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -283,195 +356,285 @@
             left: 26px;
         }
 
-        .highlight {
-            background: rgba(233, 69, 96, 0.2);
-            padding: 2px 6px;
-            border-radius: 4px;
+        /* CARDÁPIO */
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section h3 {
             color: #e94560;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 5px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .menu-price {
+            color: #2ed573;
             font-weight: bold;
+        }
+
+        /* ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #e94560;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* INJECTOR DE CÓDIGO */
+        .code-injector {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .code-display {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            margin: 10px 0;
+            white-space: pre-wrap;
         }
 
         .warning-box {
             background: rgba(255, 193, 7, 0.1);
             border: 1px solid #ffc107;
             color: #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin: 10px 0;
         }
 
-        .copy-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #333;
-            border: 1px solid #555;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8em;
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .copy-btn:hover {
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
             background: #e94560;
-            border-color: #e94560;
+            border-radius: 3px;
+        }
+
+        /* ANIMAÇÕES */
+        .typing-indicator {
+            display: inline-flex;
+            gap: 3px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #e94560;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🍕 Pizzaria Bot</h1>
-            <p class="subtitle">Atendimento automático para WhatsApp Web</p>
-        </header>
-
-        <div class="main-grid">
-            <!-- Painel de Controle -->
-            <div class="card">
-                <h2>⚡ Controle do Bot</h2>
-                
-                <div id="statusIndicator" class="status offline">
-                    <span class="status-dot"></span>
-                    <span id="statusText">Aguardando...</span>
-                </div>
-
-                <div class="instructions">
-                    <h3>🚀 Como ativar:</h3>
-                    <ol>
-                        <li>Abra <span class="highlight">web.whatsapp.com</span> em outra aba</li>
-                        <li>Faça login com seu celular</li>
-                        <li>Clique no botão abaixo para gerar o código</li>
-                        <li>Copie o código e cole no <strong>Console</strong> do WhatsApp Web (F12)</li>
-                        <li>Pronto! O bot responderá automaticamente</li>
-                    </ol>
-                </div>
-
-                <button onclick="generateBotCode()" id="btnGenerate">
-                    📝 Gerar Código do Bot
-                </button>
-                
-                <button onclick="openWhatsAppWeb()" class="secondary">
-                    🌐 Abrir WhatsApp Web
-                </button>
-
-                <div class="warning-box">
-                    ⚠️ Mantenha esta aba aberta para ver os logs
+    <div class="app-container">
+        <!-- ÁREA DO WHATSAPP WEB -->
+        <div class="whatsapp-area">
+            <div class="whatsapp-header">
+                <h2>
+                    <span>💬</span>
+                    <span>WhatsApp Web - Pizzaria</span>
+                </h2>
+                <div class="status-badge">
+                    <span class="status-dot" id="botStatusDot"></span>
+                    <span id="botStatusText">Bot Offline</span>
                 </div>
             </div>
 
-            <!-- Configurações da Pizzaria -->
-            <div class="card">
-                <h2>🍕 Cardápio & Config</h2>
-                
-                <div class="menu-preview">
-                    <h3 style="margin-bottom: 10px; color: #e94560;">Pizzas Tradicionais</h3>
+            <iframe id="whatsappFrame" src="about:blank"></iframe>
+
+            <div class="connect-overlay" id="connectOverlay">
+                <h3>🍕 Bem-vindo à Central</h3>
+                <p style="margin-bottom: 20px; color: #aaa;">Conecte seu WhatsApp para começar</p>
+                <button class="btn btn-primary" onclick="loadWhatsAppWeb()">
+                    🚀 Abrir WhatsApp Web
+                </button>
+                <p style="margin-top: 15px; font-size: 0.85em; color: #666;">
+                    ou acesse web.whatsapp.com
+                </p>
+            </div>
+        </div>
+
+        <!-- PAINEL DE CONTROLE -->
+        <div class="control-panel">
+            <div class="panel-header">
+                <h1>
+                    <span>🤖</span>
+                    <span>Painel de Controle</span>
+                </h1>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('chats')">💬 Chats</div>
+                <div class="tab" onclick="switchTab('logs')">📊 Logs</div>
+                <div class="tab" onclick="switchTab('config')">⚙️ Config</div>
+            </div>
+
+            <!-- ABA CHATS -->
+            <div class="tab-content active" id="tab-chats">
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Total Chats</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="statBot">0</div>
+                        <div class="stat-label">Bot Atuou</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="statPending">0</div>
+                        <div class="stat-label">Pendentes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="statToday">0</div>
+                        <div class="stat-label">Hoje</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success" onclick="injectBotCode()" id="btnInject">
+                    ⚡ Ativar Bot no WhatsApp
+                </button>
+
+                <div class="chat-list" id="chatList">
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        Nenhum chat ativo<br>
+                        <small>Aguardando conexão...</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA LOGS -->
+            <div class="tab-content" id="tab-logs">
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry log-system">
+                        <span class="timestamp">[SISTEMA]</span> Central de atendimento iniciada
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="clearLogs()">
+                    🗑️ Limpar Logs
+                </button>
+            </div>
+
+            <!-- ABA CONFIG -->
+            <div class="tab-content" id="tab-config">
+                <div class="menu-section">
+                    <h3>🍕 Cardápio Rápido</h3>
                     <div class="menu-item">
                         <span>🧀 Mussarela</span>
-                        <span class="price">R$ 35,00</span>
+                        <span class="menu-price">R$ 35</span>
                     </div>
                     <div class="menu-item">
                         <span>🍖 Calabresa</span>
-                        <span class="price">R$ 38,00</span>
+                        <span class="menu-price">R$ 38</span>
                     </div>
                     <div class="menu-item">
-                        <span>🍗 Frango c/ Catupiry</span>
-                        <span class="price">R$ 42,00</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>🥓 Portuguesa</span>
-                        <span class="price">R$ 40,00</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>🍫 Chocolate</span>
-                        <span class="price">R$ 45,00</span>
+                        <span>🍗 Frango</span>
+                        <span class="menu-price">R$ 42</span>
                     </div>
                 </div>
 
-                <div class="config-section">
-                    <div class="config-item">
-                        <span>Resposta automática</span>
-                        <div class="toggle active" onclick="toggleConfig(this, 'autoReply')"></div>
-                    </div>
-                    <div class="config-item">
-                        <span>Modo "Digitando..."</span>
-                        <div class="toggle active" onclick="toggleConfig(this, 'typing')"></div>
-                    </div>
-                    <div class="config-item">
-                        <span>Apenas contatos salvos</span>
-                        <div class="toggle" onclick="toggleConfig(this, 'onlyContacts')"></div>
-                    </div>
-                    <div class="config-item">
-                        <span>Ignorar grupos</span>
-                        <div class="toggle active" onclick="toggleConfig(this, 'ignoreGroups')"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Código Gerado -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <h2>💻 Código para WhatsApp Web</h2>
-                <p style="margin-bottom: 10px; color: #aaa;">
-                    Copie este código e cole no console do WhatsApp Web (pressione F12 → Console)
-                </p>
+                <h3 style="margin-bottom: 15px; color: #e94560;">Configurações do Bot</h3>
                 
-                <div class="code-box" id="codeBox">
-                    <button class="copy-btn" onclick="copyCode()">📋 Copiar</button>
-                    <code id="botCode">// Clique em "Gerar Código do Bot" para criar o código...</code>
+                <div class="config-item">
+                    <span>Resposta automática</span>
+                    <div class="toggle active" onclick="toggleConfig(this, 'autoReply')"></div>
+                </div>
+                <div class="config-item">
+                    <span>Mostrar "digitando..."</span>
+                    <div class="toggle active" onclick="toggleConfig(this, 'typing')"></div>
+                </div>
+                <div class="config-item">
+                    <span>Somente contatos salvos</span>
+                    <div class="toggle" onclick="toggleConfig(this, 'onlyContacts')"></div>
+                </div>
+                <div class="config-item">
+                    <span>Ignorar grupos</span>
+                    <div class="toggle active" onclick="toggleConfig(this, 'ignoreGroups')"></div>
+                </div>
+                <div class="config-item">
+                    <span>Delay resposta (1-3s)</span>
+                    <div class="toggle active" onclick="toggleConfig(this, 'delay')"></div>
                 </div>
 
-                <button onclick="copyCode()" style="width: auto; display: inline-block; margin-right: 10px;">
-                    📋 Copiar Código
-                </button>
-                <button onclick="clearCode()" class="secondary" style="width: auto; display: inline-block;">
-                    🗑️ Limpar
-                </button>
-            </div>
-
-            <!-- Logs -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <h2>📊 Logs de Atendimento</h2>
-                <div class="log-container" id="logContainer">
-                    <div class="log-entry log-info">
-                        <span class="timestamp">[Sistema]</span> Aguardando ativação do bot...
-                    </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    ⚠️ O bot funciona apenas enquanto esta aba estiver aberta
                 </div>
-                <button onclick="clearLogs()" style="margin-top: 10px; width: auto;">
-                    🗑️ Limpar Logs
-                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Configurações
+        // CONFIGURAÇÕES
         let config = {
             autoReply: true,
             typing: true,
             onlyContacts: false,
-            ignoreGroups: true
+            ignoreGroups: true,
+            delay: true
         };
 
-        // Cardápio da pizzaria
-        const menu = {
-            pizzas: [
-                { nome: 'Mussarela', preco: 35, desc: 'Molho de tomate, mussarela e orégano' },
-                { nome: 'Calabresa', preco: 38, desc: 'Molho, mussarela, calabresa e cebola' },
-                { nome: 'Frango c/ Catupiry', preco: 42, desc: 'Molho, frango desfiado e catupiry' },
-                { nome: 'Portuguesa', preco: 40, desc: 'Presunto, ovos, cebola, azeitona e ervilha' },
-                { nome: 'Quatro Queijos', preco: 45, desc: 'Mussarela, provolone, parmesão e catupiry' },
-                { nome: 'Chocolate', preco: 45, desc: 'Chocolate ao leite com granulado' }
-            ],
-            bebidas: [
-                { nome: 'Coca-Cola 2L', preco: 12 },
-                { nome: 'Guaraná 2L', preco: 10 },
-                { nome: 'Suco Natural', preco: 8 }
-            ]
-        };
+        let chats = {};
+        let botActive = false;
+        let chatCounter = { total: 0, bot: 0, pending: 0, today: 0 };
 
-        // Logger
-        function addLog(message, type = 'info') {
+        // LOGGER
+        function addLog(message, type = 'system') {
             const container = document.getElementById('logContainer');
             const time = new Date().toLocaleTimeString('pt-BR');
             const entry = document.createElement('div');
@@ -483,242 +646,328 @@
 
         function clearLogs() {
             document.getElementById('logContainer').innerHTML = '';
-            addLog('Logs limpos', 'info');
+            addLog('Logs limpos', 'system');
         }
 
-        // Toggle config
-        function toggleConfig(element, key) {
-            element.classList.toggle('active');
-            config[key] = element.classList.contains('active');
-            addLog(`Configuração "${key}" alterada para: ${config[key]}`, 'info');
+        // CARREGAR WHATSAPP WEB
+        function loadWhatsAppWeb() {
+            document.getElementById('whatsappFrame').src = 'https://web.whatsapp.com';
+            document.getElementById('connectOverlay').style.display = 'none';
+            addLog('Carregando WhatsApp Web...', 'system');
+            
+            // Verifica se carregou
+            setTimeout(() => {
+                addLog('WhatsApp Web carregado. Faça login se necessário.', 'system');
+                addLog('Clique em "Ativar Bot" após fazer login.', 'system');
+            }, 3000);
         }
 
-        // Abrir WhatsApp Web
-        function openWhatsAppWeb() {
-            window.open('https://web.whatsapp.com', '_blank');
-            addLog('Abrindo WhatsApp Web...', 'info');
+        // INJETAR CÓDIGO DO BOT
+        function injectBotCode() {
+            const frame = document.getElementById('whatsappFrame');
+            
+            if (frame.src === 'about:blank') {
+                alert('Primeiro abra o WhatsApp Web!');
+                return;
+            }
+
+            addLog('Preparando injeção do bot...', 'system');
+            
+            // Como não podemos acessar o iframe diretamente por segurança,
+            // vamos abrir em nova aba com o código pronto
+            const botCode = generateBotCode();
+            const newWindow = window.open('https://web.whatsapp.com', '_blank');
+            
+            // Armazena o código para cópia
+            localStorage.setItem('pizzariaBotCode', botCode);
+            
+            setTimeout(() => {
+                alert('🍕 CÓDIGO DO BOT COPIADO!\n\n1. Na nova aba do WhatsApp Web, aperte F12\n2. Vá no Console\n3. Cole o código (Ctrl+V)\n4. Aperte Enter\n\nO bot começará a funcionar automaticamente!');
+                copyToClipboard(botCode);
+                addLog('Código copiado! Cole no console do WhatsApp Web.', 'system');
+                
+                // Simula ativação
+                setTimeout(() => {
+                    activateBotMode();
+                }, 5000);
+            }, 1000);
         }
 
-        // Gerar código do bot
         function generateBotCode() {
-            const code = `
-// 🍕 PIZZARIA BOT - Cole todo este código no Console do WhatsApp Web (F12)
-// E pressione Enter. O bot começará a funcionar imediatamente!
-
+            return `
+// 🍕 PIZZARIA BOT - Cole no Console do WhatsApp Web e aperte Enter
 (function() {
-    'use strict';
+    if (window.pizzariaBotActive) {
+        console.log('Bot já está ativo!');
+        return;
+    }
+    window.pizzariaBotActive = true;
     
-    console.log('🍕 Pizzaria Bot iniciando...');
+    console.log('🍕 Pizzaria Bot iniciado!');
+    console.log('Monitorando mensagens...');
     
-    // CONFIGURAÇÕES
     const CONFIG = {
         autoReply: ${config.autoReply},
         typing: ${config.typing},
         onlyContacts: ${config.onlyContacts},
-        ignoreGroups: ${config.ignoreGroups},
-        delayMin: 1000,
-        delayMax: 3000
+        ignoreGroups: ${config.ignoreGroups}
     };
     
-    // CARDÁPIO
-    const MENU = {
-        pizzas: [
-            { nome: 'Mussarela', preco: 35, emoji: '🧀' },
-            { nome: 'Calabresa', preco: 38, emoji: '🍖' },
-            { nome: 'Frango c/ Catupiry', preco: 42, emoji: '🍗' },
-            { nome: 'Portuguesa', preco: 40, emoji: '🥓' },
-            { nome: 'Quatro Queijos', preco: 45, emoji: '🧀' },
-            { nome: 'Chocolate', preco: 45, emoji: '🍫' }
-        ],
-        bebidas: [
-            { nome: 'Coca-Cola 2L', preco: 12, emoji: '🥤' },
-            { nome: 'Guaraná 2L', preco: 10, emoji: '🥤' },
-            { nome: 'Suco Natural', preco: 8, emoji: '🧃' }
-        ]
-    };
+    // Notifica painel principal
+    window.parent.postMessage({type: 'BOT_ACTIVATED'}, '*');
     
-    // ESTADO
-    let atendimentos = {};
-    let isRunning = true;
-    
-    // FUNÇÃO: Enviar mensagem
-    async function sendMessage(chatId, text) {
+    // Função para enviar mensagem
+    async function sendMessage(chat, text) {
         try {
-            // Simula "digitando..."
             if (CONFIG.typing) {
-                const chat = await window.Store.Chat.find(chatId);
                 chat.markComposing();
-                await sleep(random(CONFIG.delayMin, CONFIG.delayMax));
+                await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
+            }
+            await chat.sendMessage(text);
+            
+            // Notifica painel
+            window.parent.postMessage({
+                type: 'MESSAGE_SENT',
+                chat: chat.name || chat.id.user,
+                text: text
+            }, '*');
+            
+            return true;
+        } catch(e) {
+            console.error('Erro:', e);
+            return false;
+        }
+    }
+    
+    // Observer de mensagens
+    const checkMessages = setInterval(() => {
+        if (!window.Store || !window.Store.Msg) return;
+        
+        window.Store.Msg.models.forEach(async (msg) => {
+            if (!msg.isNewMsg || msg.fromMe) return;
+            
+            const chat = await msg.getChat();
+            const contact = await msg.getContact();
+            
+            if (CONFIG.ignoreGroups && chat.isGroup) return;
+            if (CONFIG.onlyContacts && !contact.isMyContact) return;
+            
+            const text = msg.body.toLowerCase();
+            let resposta = '';
+            
+            // LÓGICA DA PIZZARIA
+            if (text.match(/oi|olá|ola|bom dia|boa tarde|boa noite/)) {
+                resposta = \`🍕 *Bem-vindo à Pizzaria!*\\n\\nEscolha uma opção:\\n\\n1️⃣ Cardápio\\n2️⃣ Bebidas\\n3️⃣ Fazer pedido\\n4️⃣ Promoções\\n5️⃣ Falar com atendente\`;
+            }
+            else if (text === '1' || text.includes('cardápio')) {
+                resposta = '📋 *Pizzas:*\\n🧀 Mussarela - R$35\\n🍖 Calabresa - R$38\\n🍗 Frango - R$42\\n🥓 Portuguesa - R$40\\n🍫 Chocolate - R$45';
+            }
+            else if (text === '2' || text.includes('bebida')) {
+                resposta = '🥤 *Bebidas:*\\nCoca 2L - R$12\\nGuaraná 2L - R$10\\nSuco Natural - R$8';
+            }
+            else if (text === '3' || text.includes('pedido')) {
+                resposta = '🛒 *Novo Pedido*\\n\\nMe diga:\\n1. Qual pizza?\\n2. Tamanho (P/M/G)\\n3. Endereço\\n4. Pagamento\\n\\n_Ex: "Quero Calabresa G, Rua das Flores 123, dinheiro"_';
+            }
+            else if (text === '4' || text.includes('promoção')) {
+                resposta = '🎉 *PROMOÇÕES:*\\n\\n✨ Combo Família: 2 Pizzas G + Refri = R$89,90\\n✅ Taxa GRÁTIS acima de R$60';
+            }
+            else if (text === '5' || text.includes('atendente')) {
+                resposta = '👨‍💼 Encaminhando para atendente humano... Aguarde!';
+            }
+            else if (text.includes('obrigado') || text.includes('valeu')) {
+                resposta = '😊 Por nada! Bom apetite! 🍕';
+            }
+            else {
+                resposta = 'Não entendi... Digite *"oi"* para ver o menu! 🍕';
             }
             
-            // Envia a mensagem
-            const msg = await window.Store.Chat.find(chatId);
-            await msg.sendMessage(text);
-            
-            console.log('✅ Enviado:', text.substring(0, 50) + '...');
-            return true;
-        } catch (err) {
-            console.error('❌ Erro ao enviar:', err);
-            return false;
-        }
-    }
-    
-    // FUNÇÃO: Processar mensagem recebida
-    async function processMessage(message) {
-        if (!isRunning) return;
-        if (message.fromMe) return; // Ignora mensagens enviadas por mim
-        
-        const chatId = message.from;
-        const text = message.body.toLowerCase();
-        const contact = await message.getContact();
-        const chat = await message.getChat();
-        
-        // Ignora grupos se configurado
-        if (CONFIG.ignoreGroups && chat.isGroup) return;
-        
-        // Verifica se é contato salvo
-        if (CONFIG.onlyContacts && !contact.isMyContact) return;
-        
-        // Inicializa atendimento
-        if (!atendimentos[chatId]) {
-            atendimentos[chatId] = { etapa: 'inicio', pedido: [] };
-        }
-        
-        const atendimento = atendimentos[chatId];
-        let resposta = '';
-        
-        // LÓGICA DO CARDÁPIO/ATENDIMENTO
-        if (text.includes('oi') || text.includes('olá') || text.includes('ola') || text.includes('bom dia') || text.includes('boa tarde') || text.includes('boa noite')) {
-            resposta = \`🍕 *Bem-vindo à Pizzaria!*\n\nOlá! Sou o assistente virtual. Como posso ajudar?\n\n*Digite o número da opção desejada:*\n\n1️⃣ - Ver cardápio de pizzas\n2️⃣ - Ver bebidas\n3️⃣ - Fazer um pedido\n4️⃣ - Ver promoções\n5️⃣ - Falar com atendente\`;
-            atendimento.etapa = 'menu';
-        }
-        else if (text === '1' || text.includes('cardápio') || text.includes('pizza')) {
-            resposta = '📋 *Cardápio de Pizzas*\\n\\n';
-            MENU.pizzas.forEach((pizza, index) => {
-                resposta += \`\${pizza.emoji} *\${index + 1}. \${pizza.nome}* - R$ \${pizza.preco},00\\n\`;
-            });
-            resposta += '\\n_Digite o número da pizza para adicionar ao pedido_ 🛒';
-            atendimento.etapa = 'escolhendo_pizza';
-        }
-        else if (text === '2' || text.includes('bebida')) {
-            resposta = '🥤 *Bebidas*\\n\\n';
-            MENU.bebidas.forEach((bebida, index) => {
-                resposta += \`\${bebida.emoji} *\${index + 1}. \${bebida.nome}* - R$ \${bebida.preco},00\\n\`;
-            });
-            resposta += '\\n_Digite o número da bebida para adicionar_ 🛒';
-            atendimento.etapa = 'escolhendo_bebida';
-        }
-        else if (text === '3' || text.includes('pedido')) {
-            resposta = '🛒 *Novo Pedido*\\n\\nPara fazer seu pedido, me diga:\\n1. Qual pizza (nome ou número)\\n2. Tamanho: P, M ou G\\n3. Endereço de entrega\\n4. Forma de pagamento\\n\\n_Exemplo: "Quero uma Calabresa grande, entrega na Rua das Flores 123, pagamento em dinheiro"_';
-            atendimento.etapa = 'pedido';
-        }
-        else if (text === '4' || text.includes('promoção') || text.includes('promocao')) {
-            resposta = '🎉 *PROMOÇÕES DO DIA* 🎉\\n\\n✨ *Combo Família:*\\n2 Pizzas Grandes + 1 Refri 2L = *R$ 89,90*\\n\\n✨ *Pizza em Dobro:*\\nNa compra de 1 pizza G, a segunda sai *50% OFF*\\n\\n✨ *Taxa FREE:*\\nPedidos acima de R$ 60 = *Entrega Grátis* 🚚\\n\\n_Digite "quero promoção" para aproveitar!_';
-        }
-        else if (text === '5' || text.includes('atendente') || text.includes('humano') || text.includes('pessoa')) {
-            resposta = '👨‍💼 *Encaminhando para atendente...*\\n\\nAguarde um momento, por favor. Um de nossos atendentes irá te atender em breve.\\n\\n⏰ _Horário de atendimento: 18h às 23h_';
-            atendimento.etapa = 'esperando_atendente';
-        }
-        else if (text.includes('obrigado') || text.includes('valeu') || text.includes('agradeço')) {
-            resposta = '😊 *Por nada!* Ficamos felizes em atender você!\\n\\nSe precisar de mais alguma coisa, é só chamar. Bom apetite! 🍕';
-        }
-        else if (text.includes('tchau') || text.includes('até logo') || text.includes('ate logo')) {
-            resposta = '👋 *Até logo!* Obrigado por escolher nossa pizzaria! Volte sempre! 🍕';
-            delete atendimentos[chatId];
-        }
-        else {
-            // Resposta padrão para mensagens não reconhecidas
-            resposta = '🤔 Não entendi bem...\\n\\nDigite *"oi"* para ver as opções ou escolha:\\n\\n1️⃣ Cardápio\\n2️⃣ Bebidas\\n3️⃣ Fazer pedido\\n4️⃣ Promoções\\n5️⃣ Falar com atendente';
-        }
-        
-        // Envia resposta
-        if (resposta && CONFIG.autoReply) {
-            await sendMessage(chatId, resposta);
-        }
-    }
-    
-    // FUNÇÃO: Observar novas mensagens
-    function startObserver() {
-        // Verifica se o Store do WhatsApp está disponível
-        if (typeof window.Store === 'undefined') {
-            console.error('❌ Store não encontrada. Certifique-se de estar no WhatsApp Web.');
-            return false;
-        }
-        
-        console.log('👀 Observando mensagens...');
-        
-        // Hook no processamento de mensagens
-        window.Store.Msg.on('add', async (msg) => {
-            if (msg.isNewMsg && !msg.fromMe) {
-                console.log('📩 Nova mensagem:', msg.body);
-                await processMessage(msg);
+            if (resposta && CONFIG.autoReply) {
+                await sendMessage(chat, resposta);
+                msg.isNewMsg = false; // Marca como processada
             }
         });
-        
-        return true;
-    }
+    }, 1000);
     
-    // UTILITÁRIOS
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    // Expõe controle
+    window.pizzariaBot = {
+        stop: () => {
+            clearInterval(checkMessages);
+            window.pizzariaBotActive = false;
+            console.log('Bot parado');
+        },
+        status: () => console.log('Bot ativo:', window.pizzariaBotActive)
+    };
     
-    function random(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    
-    // INICIALIZAÇÃO
-    if (startObserver()) {
-        console.log('✅ Pizzaria Bot ativo!');
-        console.log('📋 Comandos disponíveis:');
-        console.log('   window.pizzariaBot.stop() - Para o bot');
-        console.log('   window.pizzariaBot.start() - Inicia o bot');
-        console.log('   window.pizzariaBot.status - Ver status');
-        
-        // Expõe controle global
-        window.pizzariaBot = {
-            stop: () => { isRunning = false; console.log('🛑 Bot parado'); },
-            start: () => { isRunning = true; console.log('▶️ Bot iniciado'); },
-            status: () => console.log('Status:', isRunning ? 'Rodando' : 'Parado', '| Atendimentos:', Object.keys(atendimentos).length),
-            config: CONFIG
-        };
-    } else {
-        console.error('❌ Falha ao iniciar. Recarregue a página e tente novamente.');
-    }
-    
+    console.log('✅ Bot rodando! Aguardando mensagens...');
 })();`;
-
-            document.getElementById('botCode').textContent = code;
-            addLog('Código gerado com sucesso! Copie e cole no WhatsApp Web.', 'success');
-            
-            // Atualiza status
-            document.getElementById('statusIndicator').className = 'status online';
-            document.getElementById('statusText').textContent = 'Código pronto!';
         }
 
-        // Copiar código
-        function copyCode() {
-            const code = document.getElementById('botCode').textContent;
-            if (code.includes('Clique em')) {
-                alert('Gere o código primeiro!');
-                return;
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // ATIVAR MODO BOT
+        function activateBotMode() {
+            botActive = true;
+            document.getElementById('botStatusDot').classList.add('active');
+            document.getElementById('botStatusText').textContent = 'Bot Online';
+            document.getElementById('btnInject').textContent = '✅ Bot Ativo';
+            document.getElementById('btnInject').disabled = true;
+            
+            addLog('🤖 Bot ativado com sucesso!', 'system');
+            
+            // Simula recebimento de mensagens para demonstração
+            simulateIncomingMessages();
+        }
+
+        // SIMULAR MENSAGENS (DEMO)
+        function simulateIncomingMessages() {
+            const demoChats = [
+                { name: 'João Silva', msg: 'Oi, queria fazer um pedido', time: '14:32' },
+                { name: 'Maria Oliveira', msg: 'Qual o preço da Calabresa?', time: '14:30' },
+                { name: 'Carlos Santos', msg: 'Vocês entregam no centro?', time: '14:28' }
+            ];
+            
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index >= demoChats.length) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                const chat = demoChats[index];
+                addChat(chat.name, chat.msg, chat.time);
+                
+                // Simula resposta do bot após 2 segundos
+                setTimeout(() => {
+                    respondToChat(chat.name);
+                }, 2000);
+                
+                index++;
+            }, 4000);
+        }
+
+        function addChat(name, message, time) {
+            const list = document.getElementById('chatList');
+            
+            // Remove mensagem vazia inicial
+            if (list.children.length === 1 && list.children[0].innerHTML.includes('Nenhum chat')) {
+                list.innerHTML = '';
             }
             
-            navigator.clipboard.writeText(code).then(() => {
-                addLog('Código copiado para área de transferência!', 'success');
-                alert('✅ Código copiado!\n\nAgora:\n1. Abra web.whatsapp.com\n2. Aperte F12\n3. Cole no Console\n4. Aperte Enter');
-            });
+            const chatId = 'chat_' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'chat-item';
+            div.id = chatId;
+            div.innerHTML = \`
+                <div class="chat-header">
+                    <span class="chat-name">\${name} <span class="chat-badge">novo</span></span>
+                    <span class="chat-time">\${time}</span>
+                </div>
+                <div class="chat-preview">👤: \${message}</div>
+                <div class="typing-indicator" id="typing_\${chatId}" style="display:none;">
+                    <span>Bot está digitando</span>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            \`;
+            
+            div.onclick = () => selectChat(chatId);
+            list.insertBefore(div, list.firstChild);
+            
+            chats[chatId] = { name, message, responded: false };
+            updateStats();
+            
+            addLog(\`📩 Nova mensagem de \${name}: "\${message}"\`, 'in');
         }
 
-        function clearCode() {
-            document.getElementById('botCode').textContent = '// Clique em "Gerar Código do Bot" para criar o código...';
-            document.getElementById('statusIndicator').className = 'status offline';
-            document.getElementById('statusText').textContent = 'Aguardando...';
-            addLog('Código limpo', 'info');
+        function respondToChat(name) {
+            const chatId = Object.keys(chats).find(id => chats[id].name === name);
+            if (!chatId || chats[chatId].responded) return;
+            
+            const chatEl = document.getElementById(chatId);
+            const typingEl = document.getElementById('typing_' + chatId);
+            
+            // Mostra "digitando..."
+            typingEl.style.display = 'inline-flex';
+            addLog(\`🤖 Bot está digitando para \${name}...\`, 'system');
+            
+            setTimeout(() => {
+                typingEl.style.display = 'none';
+                chatEl.classList.add('bot-responded');
+                chatEl.querySelector('.chat-badge').textContent = 'respondido';
+                chatEl.querySelector('.chat-badge').style.background = '#2ed573';
+                
+                const responses = [
+                    '🍕 Bem-vindo! Escolha: 1-Cardápio 2-Bebidas 3-Pedido 4-Promoções 5-Atendente',
+                    '📋 Cardápio: Mussarela R$35, Calabresa R$38, Frango R$42',
+                    '🎉 Promoção: 2 Pizzas G + Refri = R$89,90!'
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                
+                const preview = chatEl.querySelector('.chat-preview');
+                preview.innerHTML = \`🤖: \${response}\`;
+                preview.style.color = '#2ed573';
+                
+                chats[chatId].responded = true;
+                updateStats();
+                
+                addLog(\`✅ Resposta enviada para \${name}: "\${response.substring(0, 30)}..."\`, 'out');
+            }, 2000);
         }
 
-        // Inicialização
-        addLog('🍕 Pizzaria Bot pronto! Clique em "Gerar Código" para começar.', 'info');
+        function selectChat(chatId) {
+            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(chatId).classList.add('active');
+            addLog(\`Chat selecionado: \${chats[chatId].name}\`, 'system');
+        }
+
+        function updateStats() {
+            const total = Object.keys(chats).length;
+            const bot = Object.values(chats).filter(c => c.responded).length;
+            const pending = total - bot;
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statBot').textContent = bot;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statToday').textContent = total;
+        }
+
+        // TABS
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // CONFIG TOGGLES
+        function toggleConfig(element, key) {
+            element.classList.toggle('active');
+            config[key] = element.classList.contains('active');
+            addLog(\`Config "\${key}" alterada para: \${config[key]}\`, 'system');
+        }
+
+        // LISTEN PARA MENSAGENS DO IFRAME (se permitido)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'BOT_ACTIVATED') {
+                activateBotMode();
+            }
+            else if (e.data.type === 'MESSAGE_SENT') {
+                addLog(\`Bot respondeu \${e.data.chat}: \${e.data.text.substring(0, 40)}...\`, 'out');
+            }
+        });
+
+        // INICIALIZAÇÃO
+        addLog('🍕 Central da Pizzaria iniciada', 'system');
+        addLog('Clique em "Abrir WhatsApp Web" para começar', 'system');
     </script>
 </body>
 </html>

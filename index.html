@@ -273,6 +273,7 @@
                                     <i class="fab fa-whatsapp mr-2"></i>Enviar Foto
                                 </button>
                             </div>
+                            <p class="text-xs text-gray-500 mt-2">Será enviado para: (61) 99228-6508</p>
                         </div>
                     </div>
                 </div>
@@ -360,6 +361,7 @@
                                     <i class="fab fa-whatsapp mr-2"></i>Enviar Foto
                                 </button>
                             </div>
+                            <p class="text-xs text-gray-500 mt-2">Será enviado para: (61) 99228-6508</p>
                         </div>
                     </div>
                 </div>
@@ -417,7 +419,7 @@
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
                 <p class="text-blue-800 text-sm">
                     <i class="fas fa-info-circle mr-2"></i>
-                    O resumo será enviado para (61) 99228-6508
+                    O resumo será enviado automaticamente para (61) 99228-6508
                 </p>
             </div>
             
@@ -436,6 +438,9 @@
     <div id="printSection" class="hidden"></div>
 
     <script>
+        // NÚMERO FIXO DO WHATSAPP
+        const WHATSAPP_NUMBER = '5561992286508';
+        
         let storeName = '';
         let sales = [];
         let currentPayment = 'pix';
@@ -616,7 +621,7 @@
             showNotification('Recibo do pedido gerado!');
         }
 
-        // WHATSAPP FUNCTIONS WITH IMAGE
+        // WHATSAPP FUNCTIONS - SEMPRE PARA O NÚMERO FIXO
         async function sendReceiptWhatsApp() {
             const receipt = document.getElementById('receiptContainer');
             
@@ -629,44 +634,39 @@
                 
                 const imageData = canvas.toDataURL('image/png');
                 
-                // Convert to blob
+                // Converter para blob
                 const response = await fetch(imageData);
                 const blob = await response.blob();
                 
-                // Create file
+                // Criar arquivo
                 const file = new File([blob], 'recibo.png', { type: 'image/png' });
                 
-                // Try to use Web Share API with files (mobile)
+                // Tentar usar Web Share API (funciona no celular)
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Recibo',
-                        text: 'Segue o recibo:'
-                    });
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Recibo - ' + storeName,
+                            text: 'Segue o recibo:'
+                        });
+                        showNotification('Recibo enviado!');
+                    } catch (err) {
+                        // Se cancelar ou der erro, faz o fallback
+                        fallbackSendImage(imageData, 'recibo');
+                    }
                 } else {
-                    // Fallback: download and open WhatsApp
-                    const link = document.createElement('a');
-                    link.download = 'recibo.png';
-                    link.href = imageData;
-                    link.click();
-                    
-                    setTimeout(() => {
-                        const phone = '5561992286508';
-                        const message = 'Olá! Segue o recibo em anexo.';
-                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-                        alert('Imagem baixada! Anexe-a no WhatsApp que será aberto.');
-                    }, 500);
+                    // Fallback para PC
+                    fallbackSendImage(imageData, 'recibo');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Erro ao gerar imagem. Tente imprimir e enviar manualmente.');
+                alert('Erro ao gerar imagem. Tente imprimir.');
             }
         }
 
         async function sendOrderWhatsApp() {
             const receipt = document.getElementById('orderReceiptContainer');
             
-            // Check if order was generated
             if (document.getElementById('orderReceiptClient').textContent === '-') {
                 alert('Gere o recibo do pedido primeiro!');
                 return;
@@ -685,28 +685,42 @@
                 const file = new File([blob], 'pedido.png', { type: 'image/png' });
                 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Pedido',
-                        text: 'Novo pedido:'
-                    });
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Pedido - ' + storeName,
+                            text: 'Novo pedido:'
+                        });
+                        showNotification('Pedido enviado!');
+                    } catch (err) {
+                        fallbackSendImage(imageData, 'pedido');
+                    }
                 } else {
-                    const link = document.createElement('a');
-                    link.download = 'pedido.png';
-                    link.href = imageData;
-                    link.click();
-                    
-                    setTimeout(() => {
-                        const phone = '5561992286508';
-                        const message = 'Olá! Segue o pedido em anexo.';
-                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-                        alert('Imagem baixada! Anexe-a no WhatsApp.');
-                    }, 500);
+                    fallbackSendImage(imageData, 'pedido');
                 }
             } catch (err) {
                 console.error(err);
                 alert('Erro ao gerar imagem.');
             }
+        }
+
+        function fallbackSendImage(imageData, type) {
+            // Baixa a imagem
+            const link = document.createElement('a');
+            link.download = type + '.png';
+            link.href = imageData;
+            link.click();
+            
+            // Abre WhatsApp com número fixo
+            setTimeout(() => {
+                const message = type === 'recibo' 
+                    ? `Olá! Segue o recibo de compra em ${storeName}.` 
+                    : `Olá! Segue o pedido para ${storeName}.`;
+                
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+                
+                showNotification('Imagem baixada! Anexe no WhatsApp.');
+            }, 500);
         }
 
         // PRINT FUNCTIONS
@@ -841,7 +855,7 @@
             
             const message = `*Fechamento de Caixa - ${storeName}*\\n\\n📅 ${new Date().toLocaleDateString('pt-BR')}\\n📊 ${count} vendas\\n\\n💰 *Resumo:*\\n• PIX: ${formatCurrency(totals.pix)}\\n• Crédito: ${formatCurrency(totals.credit)}\\n• Débito: ${formatCurrency(totals.debit)}\\n• Dinheiro: ${formatCurrency(totals.cash)}\\n\\n*TOTAL: ${formatCurrency(total)}*`;
             
-            window.open(`https://wa.me/5561992286508?text=${encodeURIComponent(message)}`, '_blank');
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
             document.getElementById('closeModal').classList.add('hidden');
         }
 
@@ -863,4 +877,4 @@
         });
     </script>
 </body>
-</html>
+</html>'''

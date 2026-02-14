@@ -1,387 +1,714 @@
-
-html_code = '''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDV Pro - Sistema de Caixa</title>
+    <title>CAIXA SUPREMO - Sistema de Vendas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         * {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
         }
         
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .font-cyber {
+            font-family: 'Orbitron', monospace;
         }
         
-        .dark-glass {
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(10px);
+        /* Loading Screen Styles */
+        .loading-screen {
+            background: #0a0a0a;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .matrix-bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(0, 255, 0, .3) 25%, rgba(0, 255, 0, .3) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .3) 75%, rgba(0, 255, 0, .3) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0, 255, 0, .3) 25%, rgba(0, 255, 0, .3) 26%, transparent 27%, transparent 74%, rgba(0, 255, 0, .3) 75%, rgba(0, 255, 0, .3) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            animation: matrixMove 20s linear infinite;
         }
         
-        .success-gradient {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        @keyframes matrixMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
         
-        .warning-gradient {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .hacker-text {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-width: 80%;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            min-height: 100px;
         }
         
-        .info-gradient {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .vault-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px 0;
         }
         
-        .card-hover {
-            transition: all 0.3s ease;
+        .vault-wheel {
+            position: absolute;
+            inset: 0;
+            border: 8px solid #333;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #1a1a1a, #333, #1a1a1a, #333, #1a1a1a);
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.5),
+                inset 0 0 50px rgba(0, 0, 0, 0.8);
+            animation: vaultSpin 3s linear infinite;
         }
         
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .vault-wheel::before {
+            content: '';
+            position: absolute;
+            inset: 20px;
+            border: 4px solid #00ffff;
+            border-radius: 50%;
+            border-style: dashed;
+            animation: vaultSpinReverse 2s linear infinite;
         }
         
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        .vault-wheel::after {
+            content: '';
+            position: absolute;
+            inset: 50px;
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        .vault-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: #000;
+            border: 4px solid #00ffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            z-index: 10;
+        }
+        
+        @keyframes vaultSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes vaultSpinReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
         }
         
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
+        .progress-container {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 40px;
         }
         
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .progress-bar-bg {
+            height: 30px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ffff, #0080ff, #00ffff);
+            background-size: 200% 100%;
+            border-radius: 13px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: shimmer 2s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShine 2s infinite;
         }
         
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
+        .progress-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #00ffff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
         
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        .progress-status {
+            text-align: center;
+            margin-top: 10px;
+            color: #888;
+            font-size: 16px;
+            min-height: 24px;
         }
         
-        .payment-pix { background: linear-gradient(135deg, #32bcad 0%, #199980 100%); }
-        .payment-credit { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
-        .payment-debit { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }
-        .payment-cash { background: linear-gradient(135deg, #f7b731 0%, #e58e26 100%); }
-        
-        .modal-overlay {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
         }
         
-        .receipt-paper {
-            background: #fff;
-            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-            background-size: 20px 20px;
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 10s infinite;
+            opacity: 0;
+        }
+        
+        @keyframes float {
+            0% { 
+                transform: translateY(100vh) translateX(0); 
+                opacity: 0; 
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-100px) translateX(100px); 
+                opacity: 0; 
+            }
+        }
+        
+        .access-code-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* Main App Styles */
+        .main-app {
+            display: none;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+        
+        .neon-text {
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 80px #00ffff;
+        }
+        
+        .secret-info {
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(20,20,40,0.9));
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .secret-info::before {
+            content: 'CLASSIFICADO';
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background: #ff0000;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .data-card {
+            background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(0,128,255,0.1));
+            border: 1px solid rgba(0,255,255,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,255,255,0.3);
+        }
+        
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .data-card:hover::before {
+            left: 100%;
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        
+        /* Login Screen */
+        .login-screen {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .terminal-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+        
+        .terminal-header {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #00ff00;
+        }
+        
+        .terminal-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            width: 100%;
+            padding: 10px;
+            outline: none;
+            text-transform: uppercase;
+        }
+        
+        .terminal-input::placeholder {
+            color: #008800;
+        }
+        
+        .btn-cyber {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .btn-cyber:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+        }
+        
+        .btn-cyber::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-cyber:hover::before {
+            left: 100%;
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Login Screen -->
-    <div id="loginScreen" class="fixed inset-0 gradient-bg flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 fade-in">
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-cash-register text-white text-3xl"></i>
-                </div>
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">PDV Pro</h1>
-                <p class="text-gray-500">Sistema de Gestão de Caixa</p>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <i class="fas fa-terminal mr-2"></i>
+                SISTEMA DE CAIXA SUPREMO v9.0
+                <span class="blink">_</span>
             </div>
             
-            <div id="newStoreForm">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Primeiro Acesso</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Estabelecimento</label>
-                        <input type="text" id="storeName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" placeholder="Ex: Minha Loja">
-                    </div>
-                    <button onclick="createStore()" class="w-full gradient-bg text-white font-semibold py-3 rounded-lg hover:opacity-90 transition transform hover:scale-105">
-                        <i class="fas fa-plus-circle mr-2"></i>Criar Caixa
-                    </button>
-                </div>
+            <div id="loginModeCreate">
+                <p class="text-green-400 mb-4 font-mono text-sm">
+                    > INICIALIZANDO NOVO CAIXA...<br>
+                    > DIGITE O NOME DO ESTABELECIMENTO:
+                </p>
+                <input type="text" id="storeNameInput" class="terminal-input" placeholder="NOME_DO_ESTABELECIMENTO">
+                <button onclick="createStore()" class="btn-cyber">
+                    <i class="fas fa-key mr-2"></i>GERAR CÓDIGO DE ACESSO
+                </button>
             </div>
             
-            <div id="existingStoreForm" class="hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Acessar Caixa Existente</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Código de Acesso</label>
-                        <input type="text" id="accessCode" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition uppercase" placeholder="Digite o código">
-                    </div>
-                    <button onclick="accessStore()" class="w-full success-gradient text-white font-semibold py-3 rounded-lg hover:opacity-90 transition transform hover:scale-105">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Acessar Caixa
-                    </button>
-                </div>
-                <button onclick="showNewStore()" class="w-full mt-4 text-gray-500 hover:text-purple-600 text-sm">
-                    Criar novo caixa
+            <div id="loginModeAccess" class="hidden">
+                <p class="text-green-400 mb-4 font-mono text-sm">
+                    > INSIRA O CÓDIGO DE ACESSO SECRETO:<br>
+                    > ESTE CÓDIGO CONTÉM DADOS CRIPTOGRAFADOS...
+                </p>
+                <input type="text" id="accessCodeInput" class="terminal-input" placeholder="CODIGO_SECRETO" maxlength="12">
+                <button onclick="accessStore()" class="btn-cyber">
+                    <i class="fas fa-unlock-alt mr-2"></i>DECODIFICAR E ACESSAR
                 </button>
             </div>
             
             <div class="mt-6 text-center">
-                <button onclick="toggleLoginMode()" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                    <span id="toggleText">Já tem um código? Acesse aqui</span>
+                <button onclick="toggleLoginMode()" class="text-green-600 hover:text-green-400 text-sm font-mono underline">
+                    <span id="toggleLoginText">[ JÁ POSSUI CÓDIGO? CLIQUE AQUI ]</span>
                 </button>
+            </div>
+            
+            <div id="generatedCodeDisplay" class="hidden mt-6 p-4 border border-green-500 rounded bg-green-900 bg-opacity-20">
+                <p class="text-green-400 font-mono text-xs mb-2">> CÓDIGO GERADO COM SUCESSO!</p>
+                <p class="text-yellow-400 font-mono text-2xl text-center tracking-widest" id="newGeneratedCode"></p>
+                <p class="text-green-400 font-mono text-xs mt-2 text-center">> GUARDE ESTE CÓDIGO EM LOCAL SEGURO</p>
             </div>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="mainApp" class="hidden">
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="loading-screen hidden">
+        <div class="matrix-bg"></div>
+        <div class="particles" id="particles"></div>
+        
+        <div class="access-code-display">
+            <i class="fas fa-lock mr-2"></i>
+            <span id="loadingCodeDisplay">XXXX-XXXX</span>
+        </div>
+        
+        <div class="hacker-text" id="hackerText">
+            INICIANDO PROTOCOLO DE DECODIFICAÇÃO...
+        </div>
+        
+        <div class="vault-container">
+            <div class="vault-wheel"></div>
+            <div class="vault-center">
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">0%</div>
+            <div class="progress-status" id="progressStatus">Conectando aos servidores seguros...</div>
+        </div>
+        
+        <div class="mt-8 text-cyan-400 font-mono text-sm opacity-70">
+            <i class="fas fa-shield-alt mr-2"></i>
+            CONEXÃO ENCRIPTADA | PROTOCOLO TLS 9.0
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="main-app">
         <!-- Header -->
-        <header class="dark-glass text-white shadow-lg sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-4">
+        <header class="bg-black bg-opacity-50 border-b border-cyan-500 sticky top-0 z-40 backdrop-blur-md">
+            <div class="container mx-auto px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center">
-                            <i class="fas fa-cash-register text-xl"></i>
+                        <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/50">
+                            <i class="fas fa-fingerprint text-white text-2xl"></i>
                         </div>
                         <div>
-                            <h1 class="text-xl font-bold" id="headerStoreName">Minha Loja</h1>
-                            <p class="text-xs text-gray-300" id="currentDate"></p>
+                            <h1 class="text-2xl font-cyber font-bold text-white tracking-wider" id="appStoreName">NOME_DO_CAIXA</h1>
+                            <p class="text-cyan-400 text-sm font-mono" id="appCurrentDate">00/00/0000</p>
                         </div>
                     </div>
                     
                     <div class="flex items-center space-x-4">
-                        <div class="hidden md:flex items-center space-x-2 bg-gray-800 rounded-lg px-4 py-2">
-                            <i class="fas fa-qrcode text-purple-400"></i>
-                            <span class="text-sm font-mono" id="displayAccessCode"></span>
+                        <div class="hidden md:block bg-black bg-opacity-50 border border-cyan-500 rounded-lg px-4 py-2">
+                            <span class="text-gray-400 text-xs mr-2">CÓDIGO DE ACESSO:</span>
+                            <span class="text-cyan-400 font-mono font-bold tracking-widest" id="appAccessCode">XXXX-XXXX</span>
                         </div>
-                        <button onclick="openCloseCashierModal()" class="warning-gradient px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition transform hover:scale-105">
-                            <i class="fas fa-lock mr-2"></i>Fechar Caixa
-                        </button>
-                        <button onclick="logout()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-sign-out-alt"></i>
+                        <button onclick="openCloseModal()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-lg shadow-red-600/30 border border-red-400">
+                            <i class="fas fa-power-off mr-2"></i>FECHAR CAIXA
                         </button>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="container mx-auto px-4 py-6">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-purple-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Total em Caixa</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCash">R$ 0,00</h3>
+        <main class="container mx-auto px-6 py-8">
+            <!-- Secret Intelligence Panel -->
+            <div class="secret-info">
+                <h2 class="text-cyan-400 font-cyber text-xl mb-4 flex items-center">
+                    <i class="fas fa-user-secret mr-3"></i>
+                    INFORMAÇÕES CLASSIFICADAS - NÍVEL 5
+                </h2>
+                <div class="data-grid">
+                    <div class="data-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400 text-sm">VENDAS HOJE</span>
+                            <i class="fas fa-calendar-day text-cyan-400"></i>
                         </div>
-                        <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center">
-                            <i class="fas fa-wallet text-white"></i>
-                        </div>
+                        <div class="text-3xl font-bold text-white" id="infoTodaySales">R$ 0,00</div>
+                        <div class="text-green-400 text-sm mt-1" id="infoTodayCount">0 transações</div>
                     </div>
-                    <p class="text-xs text-green-600 mt-2"><i class="fas fa-arrow-up mr-1"></i>Hoje</p>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Total em PIX</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalPix">R$ 0,00</h3>
+                    
+                    <div class="data-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400 text-sm">VENDAS DO MÊS</span>
+                            <i class="fas fa-calendar-alt text-purple-400"></i>
                         </div>
-                        <div class="w-12 h-12 payment-pix rounded-full flex items-center justify-center">
-                            <i class="fas fa-qrcode text-white"></i>
-                        </div>
+                        <div class="text-3xl font-bold text-white" id="infoMonthSales">R$ 0,00</div>
+                        <div class="text-purple-400 text-sm mt-1" id="infoMonthCount">0 transações</div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2" id="countPix">0 transações</p>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-red-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Cartão de Crédito</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCredit">R$ 0,00</h3>
+                    
+                    <div class="data-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400 text-sm">TOTAL ACUMULADO</span>
+                            <i class="fas fa-vault text-yellow-400"></i>
                         </div>
-                        <div class="w-12 h-12 payment-credit rounded-full flex items-center justify-center">
-                            <i class="fas fa-credit-card text-white"></i>
-                        </div>
+                        <div class="text-3xl font-bold text-white" id="infoTotalSales">R$ 0,00</div>
+                        <div class="text-yellow-400 text-sm mt-1" id="infoTotalCount">0 transações totais</div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2" id="countCredit">0 transações</p>
-                </div>
-
-                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-yellow-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Dinheiro + Débito</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCashDebit">R$ 0,00</h3>
+                    
+                    <div class="data-card">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-gray-400 text-sm">STATUS DO SISTEMA</span>
+                            <i class="fas fa-satellite-dish text-green-400 blink"></i>
                         </div>
-                        <div class="w-12 h-12 payment-cash rounded-full flex items-center justify-center">
-                            <i class="fas fa-money-bill-wave text-white"></i>
-                        </div>
+                        <div class="text-xl font-bold text-green-400">ONLINE</div>
+                        <div class="text-gray-400 text-sm mt-1">Sincronizado em nuvem</div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2" id="countCashDebit">0 transações</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
                 <!-- Add Sale Form -->
                 <div class="lg:col-span-1">
-                    <div class="glass-effect rounded-xl shadow-lg p-6 sticky top-24">
-                        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-plus-circle text-purple-600 mr-2"></i>
-                            Nova Venda
-                        </h2>
+                    <div class="glass-panel p-6 sticky top-24">
+                        <h3 class="text-xl font-cyber text-white mb-6 flex items-center">
+                            <i class="fas fa-plus-circle text-cyan-400 mr-3"></i>
+                            REGISTRAR VENDA
+                        </h3>
                         
-                        <form id="saleForm" class="space-y-4" onsubmit="addSale(event)">
+                        <form id="saleForm" onsubmit="addSale(event)" class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Produto/Serviço</label>
-                                <input type="text" id="productName" required 
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
-                                    placeholder="Ex: Corte de Cabelo">
+                                <label class="block text-cyan-400 text-sm font-mono mb-2">PRODUTO/SERVIÇO</label>
+                                <input type="text" id="productName" required
+                                    class="w-full bg-black bg-opacity-50 border border-cyan-500 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 font-mono"
+                                    placeholder="DESCRICAO_DO_ITEM">
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                                <label class="block text-cyan-400 text-sm font-mono mb-2">VALOR (R$)</label>
                                 <input type="number" id="productValue" required step="0.01" min="0.01"
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                                    class="w-full bg-black bg-opacity-50 border border-cyan-500 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 font-mono text-xl"
                                     placeholder="0,00">
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
-                                <div class="grid grid-cols-2 gap-2">
+                                <label class="block text-cyan-400 text-sm font-mono mb-2">FORMA DE PAGAMENTO</label>
+                                <div class="grid grid-cols-2 gap-3">
                                     <label class="cursor-pointer">
                                         <input type="radio" name="payment" value="pix" class="hidden peer" checked>
-                                        <div class="peer-checked:payment-pix peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
-                                            <i class="fas fa-qrcode block mb-1"></i>
-                                            <span class="text-xs font-medium">PIX</span>
+                                        <div class="peer-checked:bg-green-600 peer-checked:border-green-400 bg-black bg-opacity-50 border border-gray-600 rounded-lg py-3 text-center transition hover:border-green-400">
+                                            <i class="fas fa-qrcode text-green-400 text-xl mb-1 block"></i>
+                                            <span class="text-xs text-gray-300 font-mono">PIX</span>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="payment" value="credit" class="hidden peer">
-                                        <div class="peer-checked:payment-credit peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
-                                            <i class="fas fa-credit-card block mb-1"></i>
-                                            <span class="text-xs font-medium">Crédito</span>
+                                        <div class="peer-checked:bg-red-600 peer-checked:border-red-400 bg-black bg-opacity-50 border border-gray-600 rounded-lg py-3 text-center transition hover:border-red-400">
+                                            <i class="fas fa-credit-card text-red-400 text-xl mb-1 block"></i>
+                                            <span class="text-xs text-gray-300 font-mono">CREDITO</span>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="payment" value="debit" class="hidden peer">
-                                        <div class="peer-checked:payment-debit peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
-                                            <i class="fas fa-card block mb-1"></i>
-                                            <span class="text-xs font-medium">Débito</span>
+                                        <div class="peer-checked:bg-blue-600 peer-checked:border-blue-400 bg-black bg-opacity-50 border border-gray-600 rounded-lg py-3 text-center transition hover:border-blue-400">
+                                            <i class="fas fa-card text-blue-400 text-xl mb-1 block"></i>
+                                            <span class="text-xs text-gray-300 font-mono">DEBITO</span>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="payment" value="cash" class="hidden peer">
-                                        <div class="peer-checked:payment-cash peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
-                                            <i class="fas fa-money-bill-wave block mb-1"></i>
-                                            <span class="text-xs font-medium">Dinheiro</span>
+                                        <div class="peer-checked:bg-yellow-600 peer-checked:border-yellow-400 bg-black bg-opacity-50 border border-gray-600 rounded-lg py-3 text-center transition hover:border-yellow-400">
+                                            <i class="fas fa-money-bill-wave text-yellow-400 text-xl mb-1 block"></i>
+                                            <span class="text-xs text-gray-300 font-mono">DINHEIRO</span>
                                         </div>
                                     </label>
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Dica de Fechamento</label>
-                                <textarea id="closingTip" rows="2"
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition resize-none"
-                                    placeholder="Observações sobre a venda..."></textarea>
+                                <label class="block text-cyan-400 text-sm font-mono mb-2">DICA DE FECHAMENTO</label>
+                                <textarea id="closingTip" rows="3"
+                                    class="w-full bg-black bg-opacity-50 border border-cyan-500 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 font-mono resize-none"
+                                    placeholder="OBSERVACOES_CLASSIFICADAS..."></textarea>
                             </div>
                             
                             <button type="submit" 
-                                class="w-full gradient-bg text-white font-bold py-4 rounded-lg hover:opacity-90 transition transform hover:scale-105 shadow-lg">
-                                <i class="fas fa-check-circle mr-2"></i>
-                                Registrar Venda
+                                class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-4 rounded-lg transition transform hover:scale-105 shadow-lg shadow-cyan-500/50 font-cyber tracking-wider">
+                                <i class="fas fa-shield-alt mr-2"></i>
+                                REGISTRAR TRANSAÇÃO
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Sales Table -->
+                <!-- Sales History -->
                 <div class="lg:col-span-2">
-                    <div class="glass-effect rounded-xl shadow-lg overflow-hidden">
-                        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                                <i class="fas fa-list-alt text-purple-600 mr-2"></i>
-                                Histórico de Vendas
-                            </h2>
+                    <div class="glass-panel overflow-hidden">
+                        <div class="p-6 border-b border-cyan-500 border-opacity-30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h3 class="text-xl font-cyber text-white flex items-center">
+                                <i class="fas fa-database text-cyan-400 mr-3"></i>
+                                HISTÓRICO DE OPERAÇÕES
+                            </h3>
                             <div class="flex gap-2">
-                                <button onclick="filterSales('all')" class="px-4 py-2 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition text-sm font-medium">
-                                    Todas
+                                <button onclick="filterSales('all')" class="px-4 py-2 bg-cyan-600 bg-opacity-30 border border-cyan-500 rounded-lg text-cyan-400 hover:bg-opacity-50 transition text-sm font-mono">
+                                    TODAS
                                 </button>
-                                <button onclick="filterSales('today')" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium">
-                                    Hoje
+                                <button onclick="filterSales('today')" class="px-4 py-2 bg-black bg-opacity-50 border border-gray-600 rounded-lg text-gray-400 hover:border-cyan-400 hover:text-cyan-400 transition text-sm font-mono">
+                                    HOJE
                                 </button>
-                                <button onclick="exportData()" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition text-sm font-medium">
-                                    <i class="fas fa-download mr-1"></i>Exportar
+                                <button onclick="exportData()" class="px-4 py-2 bg-green-600 bg-opacity-30 border border-green-500 rounded-lg text-green-400 hover:bg-opacity-50 transition text-sm font-mono">
+                                    <i class="fas fa-download mr-1"></i>EXPORTAR
                                 </button>
                             </div>
                         </div>
                         
-                        <div class="overflow-x-auto custom-scrollbar">
+                        <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-black bg-opacity-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data/Hora</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto/Serviço</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagamento</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dica</th>
-                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-cyan-400 uppercase tracking-wider">Timestamp</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-cyan-400 uppercase tracking-wider">Item</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-cyan-400 uppercase tracking-wider">Valor</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-cyan-400 uppercase tracking-wider">Pagamento</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-cyan-400 uppercase tracking-wider">Intel</th>
+                                        <th class="px-6 py-3 text-center text-xs font-mono text-cyan-400 uppercase tracking-wider">Ação</th>
                                     </tr>
                                 </thead>
-                                <tbody id="salesTableBody" class="bg-white divide-y divide-gray-200">
-                                    <!-- Sales will be inserted here -->
+                                <tbody id="salesTableBody" class="divide-y divide-cyan-900 divide-opacity-30">
+                                    <!-- Sales inserted here -->
                                 </tbody>
                             </table>
                         </div>
                         
                         <div id="emptyState" class="hidden p-12 text-center">
-                            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-inbox text-gray-400 text-4xl"></i>
+                            <div class="w-24 h-24 bg-black bg-opacity-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-cyan-500">
+                                <i class="fas fa-satellite text-cyan-400 text-4xl"></i>
                             </div>
-                            <p class="text-gray-500">Nenhuma venda registrada ainda</p>
-                            <p class="text-sm text-gray-400 mt-1">Adicione sua primeira venda usando o formulário ao lado</p>
+                            <p class="text-gray-400 font-mono">NENHUMA OPERAÇÃO DETECTADA</p>
+                            <p class="text-gray-600 text-sm mt-2 font-mono">Aguardando transações...</p>
                         </div>
                     </div>
 
-                    <!-- Charts Section -->
+                    <!-- Charts -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div class="glass-effect rounded-xl shadow-lg p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Vendas por Forma de Pagamento</h3>
-                            <canvas id="paymentChart"></canvas>
+                        <div class="glass-panel p-6">
+                            <h4 class="text-lg font-cyber text-white mb-4">DISTRIBUIÇÃO DE PAGAMENTOS</h4>
+                            <canvas id="paymentChart" height="250"></canvas>
                         </div>
-                        <div class="glass-effect rounded-xl shadow-lg p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">Evolução Diária</h3>
-                            <canvas id="dailyChart"></canvas>
+                        <div class="glass-panel p-6">
+                            <h4 class="text-lg font-cyber text-white mb-4">EVOLUÇÃO TÁTICA</h4>
+                            <canvas id="evolutionChart" height="250"></canvas>
                         </div>
                     </div>
                 </div>
@@ -390,206 +717,313 @@ html_code = '''<!DOCTYPE html>
     </div>
 
     <!-- Close Cashier Modal -->
-    <div id="closeCashierModal" class="hidden fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto slide-in">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-2xl font-bold text-gray-800">
-                        <i class="fas fa-lock text-orange-500 mr-2"></i>
-                        Fechamento de Caixa
-                    </h2>
-                    <button onclick="closeModal('closeCashierModal')" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
+    <div id="closeModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border-2 border-red-500 rounded-2xl max-w-2xl w-full p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-red-600 text-white px-4 py-1 text-xs font-bold transform rotate-0">
+                CONFIDENCIAL
+            </div>
+            
+            <h2 class="text-2xl font-cyber text-red-500 mb-6 flex items-center">
+                <i class="fas fa-lock mr-3"></i>
+                FECHAMENTO DE CAIXA
+            </h2>
+            
+            <div class="bg-black bg-opacity-50 rounded-lg p-6 mb-6 border border-gray-700">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <span class="text-gray-400 text-sm">Total em PIX:</span>
+                        <div class="text-xl text-green-400 font-bold" id="closePix">R$ 0,00</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 text-sm">Total em Crédito:</span>
+                        <div class="text-xl text-red-400 font-bold" id="closeCredit">R$ 0,00</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 text-sm">Total em Débito:</span>
+                        <div class="text-xl text-blue-400 font-bold" id="closeDebit">R$ 0,00</div>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 text-sm">Total em Dinheiro:</span>
+                        <div class="text-xl text-yellow-400 font-bold" id="closeCash">R$ 0,00</div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 pt-4 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300">TOTAL GERAL:</span>
+                        <span class="text-3xl text-cyan-400 font-bold font-cyber" id="closeTotal">R$ 0,00</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="p-6">
-                <div class="receipt-paper rounded-lg p-6 mb-6 border-2 border-dashed border-gray-300">
-                    <div class="text-center mb-4">
-                        <h3 class="font-bold text-xl" id="receiptStoreName">Minha Loja</h3>
-                        <p class="text-sm text-gray-500" id="receiptDate"></p>
-                    </div>
-                    
-                    <div class="border-t border-b border-gray-300 py-4 my-4">
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Total em PIX:</span>
-                            <span class="font-bold" id="receiptPix">R$ 0,00</span>
-                        </div>
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Total em Crédito:</span>
-                            <span class="font-bold" id="receiptCredit">R$ 0,00</span>
-                        </div>
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Total em Débito:</span>
-                            <span class="font-bold" id="receiptDebit">R$ 0,00</span>
-                        </div>
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Total em Dinheiro:</span>
-                            <span class="font-bold" id="receiptCash">R$ 0,00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between text-xl font-bold text-purple-600">
-                        <span>TOTAL GERAL:</span>
-                        <span id="receiptTotal">R$ 0,00</span>
-                    </div>
-                    
-                    <div class="mt-4 pt-4 border-t border-gray-300 text-center">
-                        <p class="text-xs text-gray-500">Código de Acesso para próximo dia:</p>
-                        <p class="text-2xl font-mono font-bold text-purple-600 mt-1" id="receiptCode"></p>
-                    </div>
+            <div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg p-4 mb-6">
+                <p class="text-yellow-400 text-sm">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>ATENÇÃO:</strong> Guarde seu código de acesso. Com ele você recuperará todos estes dados em qualquer dispositivo.
+                </p>
+                <div class="text-center mt-3">
+                    <span class="text-2xl font-mono text-white tracking-widest" id="closeCode">XXXX-XXXX</span>
                 </div>
-                
-                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                    <div class="flex">
-                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-2"></i>
-                        <div>
-                            <p class="text-sm text-blue-700 font-medium">Importante!</p>
-                            <p class="text-sm text-blue-600">Guarde o código acima. Com ele você poderá acessar todo o histórico de vendas amanhã e continuar registrando novas vendas.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="confirmCloseCashier()" class="flex-1 warning-gradient text-white font-bold py-3 rounded-lg hover:opacity-90 transition">
-                        <i class="fas fa-check mr-2"></i>Confirmar Fechamento
-                    </button>
-                    <button onclick="printReceipt()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
-                        <i class="fas fa-print"></i>
-                    </button>
-                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="confirmClose()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition">
+                    CONFIRMAR FECHAMENTO
+                </button>
+                <button onclick="closeCloseModal()" class="px-6 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+                    CANCELAR
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-50 flex items-center">
-        <i class="fas fa-check-circle text-green-400 mr-2"></i>
-        <span id="toastMessage">Operação realizada com sucesso!</span>
-    </div>
-
     <script>
-        // Data Management
+        // Global Variables
         let currentStore = null;
         let sales = [];
         let paymentChart = null;
-        let dailyChart = null;
-
+        let evolutionChart = null;
+        
+        // Hacker Messages for Loading Screen
+        const hackerMessages = [
+            "INICIANDO PROTOCOLO DE DECODIFICAÇÃO...",
+            "ESTABELECENDO CONEXÃO SEGURA COM SERVIDORES...",
+            "VERIFICANDO INTEGRIDADE DO CÓDIGO DE ACESSO...",
+            "CRIPTOGRAFANDO CANAL DE COMUNICAÇÃO...",
+            "BAIXANDO DADOS DA NUVEM...",
+            "SINCRONIZANDO INFORMAÇÕES DE VENDAS...",
+            "CALCULANDO TOTAIS DO DIA...",
+            "COMPILANDO RELATÓRIOS MENSAIS...",
+            "VERIFICANDO AUTENTICIDADE DAS TRANSAÇÕES...",
+            "ATUALIZANDO BASE DE DADOS LOCAL...",
+            "GERANDO GRÁFICOS ESTATÍSTICOS...",
+            "FINALIZANDO PROTOCOLOS DE SEGURANÇA...",
+            "PREPARANDO INTERFACE DO USUÁRIO...",
+            "SISTEMA PRONTO PARA OPERAÇÃO..."
+        ];
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            updateDate();
-            setInterval(updateDate, 60000);
+            createParticles();
         });
-
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', options);
+        
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
         }
-
-        function generateAccessCode() {
+        
+        function toggleLoginMode() {
+            const createMode = document.getElementById('loginModeCreate');
+            const accessMode = document.getElementById('loginModeAccess');
+            const toggleText = document.getElementById('toggleLoginText');
+            
+            if (createMode.classList.contains('hidden')) {
+                createMode.classList.remove('hidden');
+                accessMode.classList.add('hidden');
+                toggleText.textContent = '[ JÁ POSSUI CÓDIGO? CLIQUE AQUI ]';
+            } else {
+                createMode.classList.add('hidden');
+                accessMode.classList.remove('hidden');
+                toggleText.textContent = '[ CRIAR NOVO CAIXA ]';
+            }
+        }
+        
+        function generateCode() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let code = '';
             for (let i = 0; i < 8; i++) {
                 code += chars.charAt(Math.floor(Math.random() * chars.length));
+                if (i === 3) code += '-';
             }
             return code;
         }
-
-        function toggleLoginMode() {
-            const newForm = document.getElementById('newStoreForm');
-            const existingForm = document.getElementById('existingStoreForm');
-            const toggleText = document.getElementById('toggleText');
-            
-            if (newForm.classList.contains('hidden')) {
-                newForm.classList.remove('hidden');
-                existingForm.classList.add('hidden');
-                toggleText.textContent = 'Já tem um código? Acesse aqui';
-            } else {
-                newForm.classList.add('hidden');
-                existingForm.classList.remove('hidden');
-                toggleText.textContent = 'Criar novo caixa';
-            }
-        }
-
-        function showNewStore() {
-            document.getElementById('newStoreForm').classList.remove('hidden');
-            document.getElementById('existingStoreForm').classList.add('hidden');
-            document.getElementById('toggleText').textContent = 'Já tem um código? Acesse aqui';
-        }
-
+        
         function createStore() {
-            const storeName = document.getElementById('storeName').value.trim();
-            if (!storeName) {
-                showToast('Digite o nome do estabelecimento!', 'error');
+            const name = document.getElementById('storeNameInput').value.trim();
+            if (!name) {
+                alert('DIGITE O NOME DO ESTABELECIMENTO!');
                 return;
             }
-
-            const accessCode = generateAccessCode();
+            
+            const code = generateCode();
+            document.getElementById('newGeneratedCode').textContent = code;
+            document.getElementById('generatedCodeDisplay').classList.remove('hidden');
+            
+            // Create store data structure
             const storeData = {
-                name: storeName,
-                code: accessCode,
+                name: name,
+                code: code,
                 createdAt: new Date().toISOString(),
                 sales: [],
-                closedDays: []
+                metadata: {
+                    totalSales: 0,
+                    transactionCount: 0,
+                    lastAccess: new Date().toISOString()
+                }
             };
-
-            // Save to localStorage
-            localStorage.setItem(`pdv_store_${accessCode}`, JSON.stringify(storeData));
             
-            currentStore = storeData;
-            sales = [];
+            // Save to "cloud" (localStorage simulation)
+            saveToCloud(code, storeData);
             
-            showToast(`Caixa criado! Código: ${accessCode}`, 'success');
-            
+            // Show the code and wait for user to copy
             setTimeout(() => {
-                enterApp();
-            }, 1500);
+                if (confirm('CÓDIGO GERADO: ' + code + '\\n\\nDeseja acessar o caixa agora?')) {
+                    document.getElementById('accessCodeInput').value = code;
+                    accessStore();
+                }
+            }, 1000);
         }
-
+        
         function accessStore() {
-            const code = document.getElementById('accessCode').value.trim().toUpperCase();
+            const code = document.getElementById('accessCodeInput').value.trim().toUpperCase();
             if (!code) {
-                showToast('Digite o código de acesso!', 'error');
+                alert('INSIRA O CÓDIGO DE ACESSO!');
                 return;
             }
-
-            const storeData = localStorage.getItem(`pdv_store_${code}`);
-            if (!storeData) {
-                showToast('Código não encontrado!', 'error');
-                return;
-            }
-
-            currentStore = JSON.parse(storeData);
-            sales = currentStore.sales || [];
             
-            showToast('Caixa acessado com sucesso!', 'success');
-            enterApp();
+            // Start loading sequence
+            startLoadingSequence(code);
         }
-
-        function enterApp() {
+        
+        function startLoadingSequence(code) {
             document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('loadingScreen').classList.remove('hidden');
+            document.getElementById('loadingCodeDisplay').textContent = code;
             
-            document.getElementById('headerStoreName').textContent = currentStore.name;
-            document.getElementById('displayAccessCode').textContent = currentStore.code;
+            let progress = 0;
+            const duration = 90000; // 1m30s = 90000ms
+            const interval = 100;
+            const increment = 100 / (duration / interval);
+            let messageIndex = 0;
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressStatus = document.getElementById('progressStatus');
+            const hackerText = document.getElementById('hackerText');
+            
+            const loadingInterval = setInterval(() => {
+                progress += increment;
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    setTimeout(() => {
+                        loadStoreData(code);
+                    }, 500);
+                }
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.floor(progress) + '%';
+                
+                // Update messages based on progress
+                const messageIndex = Math.floor((progress / 100) * hackerMessages.length);
+                if (messageIndex < hackerMessages.length) {
+                    progressStatus.textContent = hackerMessages[messageIndex];
+                    hackerText.textContent = hackerMessages[messageIndex];
+                }
+                
+                // Add some "hacker" text effects
+                if (Math.random() > 0.7) {
+                    hackerText.style.textShadow = `0 0 ${Math.random() * 20}px #00ff00`;
+                }
+                
+            }, interval);
+        }
+        
+        function saveToCloud(code, data) {
+            // Simulate cloud storage with localStorage
+            // In a real app, this would be an API call
+            localStorage.setItem(`SUPREME_VAULT_${code}`, JSON.stringify(data));
+        }
+        
+        function loadFromCloud(code) {
+            // Simulate loading from cloud
+            const data = localStorage.getItem(`SUPREME_VAULT_${code}`);
+            return data ? JSON.parse(data) : null;
+        }
+        
+        function loadStoreData(code) {
+            const data = loadFromCloud(code);
+            
+            if (!data) {
+                alert('CÓDIGO NÃO ENCONTRADO NO SISTEMA!');
+                location.reload();
+                return;
+            }
+            
+            currentStore = data;
+            sales = data.sales || [];
+            
+            // Update last access
+            currentStore.metadata.lastAccess = new Date().toISOString();
+            saveToCloud(code, currentStore);
+            
+            // Enter main app
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Initialize app
+            initializeApp();
+        }
+        
+        function initializeApp() {
+            document.getElementById('appStoreName').textContent = currentStore.name.toUpperCase();
+            document.getElementById('appAccessCode').textContent = currentStore.code;
+            updateDate();
+            setInterval(updateDate, 60000);
             
             updateDashboard();
             renderSalesTable();
             initCharts();
         }
-
-        function logout() {
-            currentStore = null;
-            sales = [];
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('storeName').value = '';
-            document.getElementById('accessCode').value = '';
-            showNewStore();
+        
+        function updateDate() {
+            const now = new Date();
+            document.getElementById('appCurrentDate').textContent = now.toLocaleString('pt-BR');
         }
-
+        
+        function updateDashboard() {
+            const today = new Date().toDateString();
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            let todayTotal = 0, todayCount = 0;
+            let monthTotal = 0, monthCount = 0;
+            let totalSales = 0, totalCount = 0;
+            
+            sales.forEach(sale => {
+                const saleDate = new Date(sale.date);
+                const value = parseFloat(sale.value);
+                
+                totalSales += value;
+                totalCount++;
+                
+                if (saleDate.toDateString() === today) {
+                    todayTotal += value;
+                    todayCount++;
+                }
+                
+                if (saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear) {
+                    monthTotal += value;
+                    monthCount++;
+                }
+            });
+            
+            document.getElementById('infoTodaySales').textContent = formatCurrency(todayTotal);
+            document.getElementById('infoTodayCount').textContent = `${todayCount} transações`;
+            document.getElementById('infoMonthSales').textContent = formatCurrency(monthTotal);
+            document.getElementById('infoMonthCount').textContent = `${monthCount} transações`;
+            document.getElementById('infoTotalSales').textContent = formatCurrency(totalSales);
+            document.getElementById('infoTotalCount').textContent = `${totalCount} transações totais`;
+        }
+        
         function addSale(event) {
             event.preventDefault();
             
@@ -601,18 +1035,20 @@ html_code = '''<!DOCTYPE html>
             const sale = {
                 id: Date.now(),
                 date: new Date().toISOString(),
-                product,
-                value,
-                payment,
-                tip,
-                day: new Date().toDateString()
+                product: product.toUpperCase(),
+                value: value,
+                payment: payment,
+                tip: tip,
+                timestamp: new Date().toLocaleString('pt-BR')
             };
             
             sales.unshift(sale);
             currentStore.sales = sales;
+            currentStore.metadata.totalSales += value;
+            currentStore.metadata.transactionCount++;
             
-            // Save to localStorage
-            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
+            // Save to "cloud"
+            saveToCloud(currentStore.code, currentStore);
             
             // Reset form
             document.getElementById('saleForm').reset();
@@ -621,54 +1057,32 @@ html_code = '''<!DOCTYPE html>
             updateDashboard();
             renderSalesTable();
             updateCharts();
-            showToast('Venda registrada com sucesso!', 'success');
+            
+            // Visual feedback
+            showNotification('TRANSAÇÃO REGISTRADA COM SUCESSO!', 'success');
         }
-
+        
         function deleteSale(id) {
-            if (!confirm('Tem certeza que deseja excluir esta venda?')) return;
+            if (!confirm('CONFIRMAR EXCLUSÃO DA OPERAÇÃO?')) return;
+            
+            const sale = sales.find(s => s.id === id);
+            if (sale) {
+                currentStore.metadata.totalSales -= sale.value;
+                currentStore.metadata.transactionCount--;
+            }
             
             sales = sales.filter(s => s.id !== id);
             currentStore.sales = sales;
-            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
+            
+            saveToCloud(currentStore.code, currentStore);
             
             updateDashboard();
             renderSalesTable();
             updateCharts();
-            showToast('Venda excluída!', 'success');
+            
+            showNotification('OPERAÇÃO EXCLUÍDA!', 'warning');
         }
-
-        function updateDashboard() {
-            const totals = {
-                pix: 0,
-                credit: 0,
-                debit: 0,
-                cash: 0
-            };
-            
-            const counts = {
-                pix: 0,
-                credit: 0,
-                debit: 0,
-                cash: 0
-            };
-            
-            sales.forEach(sale => {
-                totals[sale.payment] += sale.value;
-                counts[sale.payment]++;
-            });
-            
-            const total = totals.pix + totals.credit + totals.debit + totals.cash;
-            
-            document.getElementById('totalCash').textContent = formatCurrency(total);
-            document.getElementById('totalPix').textContent = formatCurrency(totals.pix);
-            document.getElementById('totalCredit').textContent = formatCurrency(totals.credit);
-            document.getElementById('totalCashDebit').textContent = formatCurrency(totals.debit + totals.cash);
-            
-            document.getElementById('countPix').textContent = `${counts.pix} transações`;
-            document.getElementById('countCredit').textContent = `${counts.credit} transações`;
-            document.getElementById('countCashDebit').textContent = `${counts.debit + counts.cash} transações`;
-        }
-
+        
         function renderSalesTable(filter = 'all') {
             const tbody = document.getElementById('salesTableBody');
             const emptyState = document.getElementById('emptyState');
@@ -677,7 +1091,7 @@ html_code = '''<!DOCTYPE html>
             
             if (filter === 'today') {
                 const today = new Date().toDateString();
-                filteredSales = sales.filter(s => s.day === today);
+                filteredSales = sales.filter(s => new Date(s.date).toDateString() === today);
             }
             
             if (filteredSales.length === 0) {
@@ -688,51 +1102,46 @@ html_code = '''<!DOCTYPE html>
             
             emptyState.classList.add('hidden');
             
-            tbody.innerHTML = filteredSales.map(sale => {
-                const date = new Date(sale.date);
-                const paymentIcons = {
-                    pix: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-qrcode mr-1"></i>PIX</span>',
-                    credit: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><i class="fas fa-credit-card mr-1"></i>Crédito</span>',
-                    debit: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><i class="fas fa-card mr-1"></i>Débito</span>',
-                    cash: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"><i class="fas fa-money-bill-wave mr-1"></i>Dinheiro</span>'
-                };
-                
-                return `
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ${date.toLocaleDateString('pt-BR')}<br>
-                            <span class="text-gray-400 text-xs">${date.toLocaleTimeString('pt-BR')}</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 font-medium">${sale.product}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">${formatCurrency(sale.value)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${paymentIcons[sale.payment]}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="${sale.tip || ''}">${sale.tip || '-'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                            <button onclick="deleteSale(${sale.id})" class="text-red-600 hover:text-red-900 transition">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            const paymentIcons = {
+                pix: '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-mono bg-green-900 text-green-400 border border-green-600"><i class="fas fa-qrcode mr-1"></i>PIX</span>',
+                credit: '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-mono bg-red-900 text-red-400 border border-red-600"><i class="fas fa-credit-card mr-1"></i>CRED</span>',
+                debit: '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-mono bg-blue-900 text-blue-400 border border-blue-600"><i class="fas fa-card mr-1"></i>DEB</span>',
+                cash: '<span class="inline-flex items-center px-2 py-1 rounded text-xs font-mono bg-yellow-900 text-yellow-400 border border-yellow-600"><i class="fas fa-money-bill-wave mr-1"></i>CASH</span>'
+            };
+            
+            tbody.innerHTML = filteredSales.map(sale => `
+                <tr class="hover:bg-cyan-900 hover:bg-opacity-20 transition">
+                    <td class="px-6 py-4 text-sm text-gray-300 font-mono">${sale.timestamp}</td>
+                    <td class="px-6 py-4 text-sm text-white font-bold">${sale.product}</td>
+                    <td class="px-6 py-4 text-sm text-cyan-400 font-bold font-mono">${formatCurrency(sale.value)}</td>
+                    <td class="px-6 py-4">${paymentIcons[sale.payment]}</td>
+                    <td class="px-6 py-4 text-sm text-gray-400 max-w-xs truncate" title="${sale.tip || ''}">${sale.tip || '<span class="text-gray-600">SEM OBSERVAÇÕES</span>'}</td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteSale(${sale.id})" class="text-red-500 hover:text-red-400 transition">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
         }
-
+        
         function filterSales(type) {
             renderSalesTable(type);
         }
-
+        
         function initCharts() {
             const paymentCtx = document.getElementById('paymentChart').getContext('2d');
-            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
             
             paymentChart = new Chart(paymentCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['PIX', 'Crédito', 'Débito', 'Dinheiro'],
+                    labels: ['PIX', 'CRÉDITO', 'DÉBITO', 'DINHEIRO'],
                     datasets: [{
                         data: [0, 0, 0, 0],
-                        backgroundColor: ['#32bcad', '#ff6b6b', '#4ecdc4', '#f7b731'],
-                        borderWidth: 0
+                        backgroundColor: ['#10b981', '#ef4444', '#3b82f6', '#eab308'],
+                        borderColor: 'rgba(0,0,0,0.5)',
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -740,21 +1149,22 @@ html_code = '''<!DOCTYPE html>
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: { color: '#9ca3af', font: { family: 'Rajdhani' } }
                         }
                     }
                 }
             });
             
-            dailyChart = new Chart(dailyCtx, {
+            evolutionChart = new Chart(evolutionCtx, {
                 type: 'line',
                 data: {
                     labels: [],
                     datasets: [{
                         label: 'Vendas Diárias',
                         data: [],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
@@ -766,23 +1176,30 @@ html_code = '''<!DOCTYPE html>
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
-                                    return 'R$ ' + value.toFixed(2);
-                                }
-                            }
+                                color: '#9ca3af',
+                                callback: value => 'R$ ' + value.toFixed(2)
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
+                    },
+                    plugins: {
+                        legend: { display: false }
                     }
                 }
             });
             
             updateCharts();
         }
-
+        
         function updateCharts() {
-            if (!paymentChart || !dailyChart) return;
+            if (!paymentChart || !evolutionChart) return;
             
             const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
-            sales.forEach(s => totals[s.payment] += s.value);
+            sales.forEach(s => totals[s.payment] += parseFloat(s.value));
             
             paymentChart.data.datasets[0].data = [
                 totals.pix,
@@ -792,63 +1209,59 @@ html_code = '''<!DOCTYPE html>
             ];
             paymentChart.update();
             
-            // Group by day
+            // Evolution chart
             const dailyTotals = {};
             sales.forEach(s => {
-                if (!dailyTotals[s.day]) dailyTotals[s.day] = 0;
-                dailyTotals[s.day] += s.value;
+                const day = new Date(s.date).toLocaleDateString('pt-BR');
+                if (!dailyTotals[day]) dailyTotals[day] = 0;
+                dailyTotals[day] += parseFloat(s.value);
             });
             
-            const sortedDays = Object.keys(dailyTotals).sort();
-            dailyChart.data.labels = sortedDays.map(d => new Date(d).toLocaleDateString('pt-BR'));
-            dailyChart.data.datasets[0].data = sortedDays.map(d => dailyTotals[d]);
-            dailyChart.update();
+            const sortedDays = Object.keys(dailyTotals).sort((a, b) => {
+                const [d1, m1, y1] = a.split('/');
+                const [d2, m2, y2] = b.split('/');
+                return new Date(y1, m1-1, d1) - new Date(y2, m2-1, d2);
+            }).slice(-7); // Last 7 days
+            
+            evolutionChart.data.labels = sortedDays;
+            evolutionChart.data.datasets[0].data = sortedDays.map(d => dailyTotals[d]);
+            evolutionChart.update();
         }
-
-        function openCloseCashierModal() {
+        
+        function openCloseModal() {
             const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
-            sales.forEach(s => totals[s.payment] += s.value);
+            sales.forEach(s => totals[s.payment] += parseFloat(s.value));
             const total = totals.pix + totals.credit + totals.debit + totals.cash;
             
-            document.getElementById('receiptStoreName').textContent = currentStore.name;
-            document.getElementById('receiptDate').textContent = new Date().toLocaleString('pt-BR');
-            document.getElementById('receiptPix').textContent = formatCurrency(totals.pix);
-            document.getElementById('receiptCredit').textContent = formatCurrency(totals.credit);
-            document.getElementById('receiptDebit').textContent = formatCurrency(totals.debit);
-            document.getElementById('receiptCash').textContent = formatCurrency(totals.cash);
-            document.getElementById('receiptTotal').textContent = formatCurrency(total);
-            document.getElementById('receiptCode').textContent = currentStore.code;
+            document.getElementById('closePix').textContent = formatCurrency(totals.pix);
+            document.getElementById('closeCredit').textContent = formatCurrency(totals.credit);
+            document.getElementById('closeDebit').textContent = formatCurrency(totals.debit);
+            document.getElementById('closeCash').textContent = formatCurrency(totals.cash);
+            document.getElementById('closeTotal').textContent = formatCurrency(total);
+            document.getElementById('closeCode').textContent = currentStore.code;
             
-            document.getElementById('closeCashierModal').classList.remove('hidden');
+            document.getElementById('closeModal').classList.remove('hidden');
         }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        
+        function closeCloseModal() {
+            document.getElementById('closeModal').classList.add('hidden');
         }
-
-        function confirmCloseCashier() {
-            // Save closed day info
-            if (!currentStore.closedDays) currentStore.closedDays = [];
-            currentStore.closedDays.push({
-                date: new Date().toISOString(),
-                total: sales.reduce((acc, s) => acc + s.value, 0)
-            });
-            
-            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
-            
-            closeModal('closeCashierModal');
-            showToast('Caixa fechado com sucesso! Use o mesmo código amanhã.', 'success');
+        
+        function confirmClose() {
+            closeCloseModal();
+            showNotification('CAIXA FECHADO COM SUCESSO!', 'success');
+            setTimeout(() => {
+                if (confirm('DESEJA SAIR DO SISTEMA?')) {
+                    location.reload();
+                }
+            }, 1000);
         }
-
-        function printReceipt() {
-            window.print();
-        }
-
+        
         function exportData() {
             const csvContent = [
-                ['Data', 'Produto/Serviço', 'Valor', 'Forma de Pagamento', 'Dica'].join(';'),
+                ['DATA', 'PRODUTO', 'VALOR', 'PAGAMENTO', 'OBSERVACAO'].join(';'),
                 ...sales.map(s => [
-                    new Date(s.date).toLocaleString('pt-BR'),
+                    s.timestamp,
                     s.product,
                     s.value.toFixed(2).replace('.', ','),
                     s.payment.toUpperCase(),
@@ -859,57 +1272,37 @@ html_code = '''<!DOCTYPE html>
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `vendas_${currentStore.name}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `OPERACOES_${currentStore.name}_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
             
-            showToast('Dados exportados!', 'success');
+            showNotification('DADOS EXPORTADOS!', 'success');
         }
-
+        
         function formatCurrency(value) {
-            return 'R$ ' + value.toFixed(2).replace('.', ',');
+            return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
         }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
+        
+        function showNotification(message, type) {
+            const div = document.createElement('div');
+            div.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 font-mono text-sm transform transition-all duration-300 translate-x-full`;
             
-            toastMessage.textContent = message;
-            toast.classList.remove('translate-y-20');
-            
-            if (type === 'error') {
-                toast.querySelector('i').className = 'fas fa-exclamation-circle text-red-400 mr-2';
+            if (type === 'success') {
+                div.classList.add('bg-green-600', 'text-white', 'border', 'border-green-400');
+            } else if (type === 'warning') {
+                div.classList.add('bg-yellow-600', 'text-white', 'border', 'border-yellow-400');
             } else {
-                toast.querySelector('i').className = 'fas fa-check-circle text-green-400 mr-2';
+                div.classList.add('bg-cyan-600', 'text-white', 'border', 'border-cyan-400');
             }
             
+            div.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${message}`;
+            document.body.appendChild(div);
+            
+            setTimeout(() => div.classList.remove('translate-x-full'), 100);
             setTimeout(() => {
-                toast.classList.add('translate-y-20');
+                div.classList.add('translate-x-full');
+                setTimeout(() => div.remove(), 300);
             }, 3000);
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('closeCashierModal');
-            if (event.target === modal) {
-                closeModal('closeCashierModal');
-            }
         }
     </script>
 </body>
-</html>'''
-
-# Save the file
-with open('/mnt/kimi/output/pdv_pro_caixa.html', 'w', encoding='utf-8') as f:
-    f.write(html_code)
-
-print("✅ Sistema PDV Pro criado com sucesso!")
-print("📁 Arquivo salvo em: /mnt/kimi/output/pdv_pro_caixa.html")
-print("\n🚀 Funcionalidades incluídas:")
-print("   • Criação de caixa com código único de acesso")
-print("   • Persistência total dos dados no navegador (LocalStorage)")
-print("   • Registro de vendas com múltiplas formas de pagamento")
-print("   • Dashboard com estatísticas em tempo real")
-print("   • Gráficos de análise (Pagamentos e Evolução Diária)")
-print("   • Fechamento de caixa com resumo completo")
-print("   • Exportação de dados para CSV/Excel")
-print("   • Design responsivo e moderno")
+</html>

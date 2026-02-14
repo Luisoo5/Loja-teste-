@@ -1,973 +1,915 @@
-<!DOCTYPE html>
+
+html_code = '''<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍕 Pizzaria Bot - Central de Atendimento</title>
+    <title>PDV Pro - Sistema de Caixa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0f0f0f;
-            height: 100vh;
-            overflow: hidden;
-            color: #fff;
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
-
-        .app-container {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            height: 100vh;
+        
+        .dark-glass {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
         }
-
-        @media (max-width: 1024px) {
-            .app-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 60% 40%;
-            }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        /* ÁREA DO WHATSAPP WEB */
-        .whatsapp-area {
-            position: relative;
-            background: #111;
-            border-right: 2px solid #e94560;
+        
+        .success-gradient {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
-
-        .whatsapp-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(90deg, #075e54, #128c7e);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        
+        .warning-gradient {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-
-        .whatsapp-header h2 {
-            font-size: 1.1em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        
+        .info-gradient {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
-
-        .status-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        
+        .card-hover {
+            transition: all 0.3s ease;
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ff4757;
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .pulse-animation {
             animation: pulse 2s infinite;
         }
-
-        .status-dot.active {
-            background: #2ed573;
-        }
-
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.7; }
         }
-
-        #whatsappFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            margin-top: 50px;
-            height: calc(100% - 50px);
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
         }
-
-        .connect-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(0,0,0,0.9);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid #e94560;
-        }
-
-        .connect-overlay h3 {
-            color: #e94560;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        /* PAINEL DE CONTROLE */
-        .control-panel {
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            background: rgba(233, 69, 96, 0.2);
-            padding: 20px;
-            border-bottom: 2px solid #e94560;
-        }
-
-        .panel-header h1 {
-            font-size: 1.3em;
-            color: #e94560;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tabs {
-            display: flex;
-            background: rgba(0,0,0,0.3);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-
-        .tab:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .tab.active {
-            background: rgba(233, 69, 96, 0.3);
-            color: #e94560;
-            border-bottom: 2px solid #e94560;
-        }
-
-        .tab-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* BOTÕES */
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #e94560;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #ff6b6b;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #0f3460;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #1a4a7a;
-        }
-
-        .btn-success {
-            background: #2ed573;
-            color: #000;
-        }
-
-        .btn:disabled {
-            background: #444;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* CHAT EM TEMPO REAL */
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .chat-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-
-        .chat-item:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateX(5px);
-        }
-
-        .chat-item.active {
-            border-left-color: #e94560;
-            background: rgba(233, 69, 96, 0.1);
-        }
-
-        .chat-item.bot-responded {
-            border-left-color: #2ed573;
-        }
-
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .chat-name {
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .chat-time {
-            font-size: 0.75em;
-            color: #888;
-        }
-
-        .chat-preview {
-            font-size: 0.85em;
-            color: #aaa;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-badge {
-            background: #e94560;
-            color: white;
-            font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 5px;
-        }
-
-        /* LOGS */
-        .log-container {
-            background: #0a0a0a;
-            border-radius: 8px;
-            padding: 15px;
-            height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8em;
-            border: 1px solid #333;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding: 6px;
-            border-radius: 4px;
-            animation: slideIn 0.3s ease;
-        }
-
+        
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-
-        .log-in { color: #3498db; border-left: 2px solid #3498db; padding-left: 8px; }
-        .log-out { color: #2ed573; border-left: 2px solid #2ed573; padding-left: 8px; }
-        .log-system { color: #f1c40f; border-left: 2px solid #f1c40f; padding-left: 8px; }
-        .log-error { color: #ff4757; border-left: 2px solid #ff4757; padding-left: 8px; }
-
-        .timestamp {
-            color: #666;
-            font-size: 0.9em;
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
-
-        /* CONFIGURAÇÕES */
-        .config-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .toggle {
-            width: 50px;
-            height: 26px;
-            background: #333;
-            border-radius: 13px;
-            position: relative;
-            cursor: pointer;
-            transition: 0.3s;
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-
-        .toggle.active {
-            background: #e94560;
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: 0.3s;
-        }
-
-        .toggle.active::after {
-            left: 26px;
-        }
-
-        /* CARDÁPIO */
-        .menu-section {
-            margin-bottom: 20px;
-        }
-
-        .menu-section h3 {
-            color: #e94560;
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-
-        .menu-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 5px;
-            border-radius: 6px;
-            font-size: 0.9em;
-        }
-
-        .menu-price {
-            color: #2ed573;
-            font-weight: bold;
-        }
-
-        /* ESTATÍSTICAS */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #e94560;
-        }
-
-        .stat-label {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        /* INJECTOR DE CÓDIGO */
-        .code-injector {
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .code-display {
-            background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.75em;
-            padding: 10px;
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 4px;
-            max-height: 150px;
-            overflow-y: auto;
-            margin: 10px 0;
-            white-space: pre-wrap;
         }
-
-        .warning-box {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid #ffc107;
-            color: #ffc107;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            margin: 10px 0;
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
         }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar {
-            width: 6px;
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.3);
+        
+        .payment-pix { background: linear-gradient(135deg, #32bcad 0%, #199980 100%); }
+        .payment-credit { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
+        .payment-debit { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }
+        .payment-cash { background: linear-gradient(135deg, #f7b731 0%, #e58e26 100%); }
+        
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: #e94560;
-            border-radius: 3px;
-        }
-
-        /* ANIMAÇÕES */
-        .typing-indicator {
-            display: inline-flex;
-            gap: 3px;
-            padding: 4px 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            margin-left: 5px;
-        }
-
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #e94560;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+        
+        .receipt-paper {
+            background: #fff;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
         }
     </style>
 </head>
-<body>
-    <div class="app-container">
-        <!-- ÁREA DO WHATSAPP WEB -->
-        <div class="whatsapp-area">
-            <div class="whatsapp-header">
-                <h2>
-                    <span>💬</span>
-                    <span>WhatsApp Web - Pizzaria</span>
-                </h2>
-                <div class="status-badge">
-                    <span class="status-dot" id="botStatusDot"></span>
-                    <span id="botStatusText">Bot Offline</span>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="fixed inset-0 gradient-bg flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 fade-in">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-cash-register text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">PDV Pro</h1>
+                <p class="text-gray-500">Sistema de Gestão de Caixa</p>
+            </div>
+            
+            <div id="newStoreForm">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Primeiro Acesso</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Estabelecimento</label>
+                        <input type="text" id="storeName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition" placeholder="Ex: Minha Loja">
+                    </div>
+                    <button onclick="createStore()" class="w-full gradient-bg text-white font-semibold py-3 rounded-lg hover:opacity-90 transition transform hover:scale-105">
+                        <i class="fas fa-plus-circle mr-2"></i>Criar Caixa
+                    </button>
                 </div>
             </div>
-
-            <iframe id="whatsappFrame" src="about:blank"></iframe>
-
-            <div class="connect-overlay" id="connectOverlay">
-                <h3>🍕 Bem-vindo à Central</h3>
-                <p style="margin-bottom: 20px; color: #aaa;">Conecte seu WhatsApp para começar</p>
-                <button class="btn btn-primary" onclick="loadWhatsAppWeb()">
-                    🚀 Abrir WhatsApp Web
+            
+            <div id="existingStoreForm" class="hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Acessar Caixa Existente</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Código de Acesso</label>
+                        <input type="text" id="accessCode" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition uppercase" placeholder="Digite o código">
+                    </div>
+                    <button onclick="accessStore()" class="w-full success-gradient text-white font-semibold py-3 rounded-lg hover:opacity-90 transition transform hover:scale-105">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Acessar Caixa
+                    </button>
+                </div>
+                <button onclick="showNewStore()" class="w-full mt-4 text-gray-500 hover:text-purple-600 text-sm">
+                    Criar novo caixa
                 </button>
-                <p style="margin-top: 15px; font-size: 0.85em; color: #666;">
-                    ou acesse web.whatsapp.com
-                </p>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button onclick="toggleLoginMode()" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                    <span id="toggleText">Já tem um código? Acesse aqui</span>
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- PAINEL DE CONTROLE -->
-        <div class="control-panel">
-            <div class="panel-header">
-                <h1>
-                    <span>🤖</span>
-                    <span>Painel de Controle</span>
-                </h1>
-            </div>
-
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('chats')">💬 Chats</div>
-                <div class="tab" onclick="switchTab('logs')">📊 Logs</div>
-                <div class="tab" onclick="switchTab('config')">⚙️ Config</div>
-            </div>
-
-            <!-- ABA CHATS -->
-            <div class="tab-content active" id="tab-chats">
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-number" id="statTotal">0</div>
-                        <div class="stat-label">Total Chats</div>
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="dark-glass text-white shadow-lg sticky top-0 z-40">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center">
+                            <i class="fas fa-cash-register text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold" id="headerStoreName">Minha Loja</h1>
+                            <p class="text-xs text-gray-300" id="currentDate"></p>
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="statBot">0</div>
-                        <div class="stat-label">Bot Atuou</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="statPending">0</div>
-                        <div class="stat-label">Pendentes</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="statToday">0</div>
-                        <div class="stat-label">Hoje</div>
-                    </div>
-                </div>
-
-                <button class="btn btn-success" onclick="injectBotCode()" id="btnInject">
-                    ⚡ Ativar Bot no WhatsApp
-                </button>
-
-                <div class="chat-list" id="chatList">
-                    <div style="text-align: center; color: #666; padding: 40px;">
-                        Nenhum chat ativo<br>
-                        <small>Aguardando conexão...</small>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="hidden md:flex items-center space-x-2 bg-gray-800 rounded-lg px-4 py-2">
+                            <i class="fas fa-qrcode text-purple-400"></i>
+                            <span class="text-sm font-mono" id="displayAccessCode"></span>
+                        </div>
+                        <button onclick="openCloseCashierModal()" class="warning-gradient px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition transform hover:scale-105">
+                            <i class="fas fa-lock mr-2"></i>Fechar Caixa
+                        </button>
+                        <button onclick="logout()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <!-- ABA LOGS -->
-            <div class="tab-content" id="tab-logs">
-                <div class="log-container" id="logContainer">
-                    <div class="log-entry log-system">
-                        <span class="timestamp">[SISTEMA]</span> Central de atendimento iniciada
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Total em Caixa</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCash">R$ 0,00</h3>
+                        </div>
+                        <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center">
+                            <i class="fas fa-wallet text-white"></i>
+                        </div>
                     </div>
+                    <p class="text-xs text-green-600 mt-2"><i class="fas fa-arrow-up mr-1"></i>Hoje</p>
                 </div>
-                <button class="btn btn-secondary" onclick="clearLogs()">
-                    🗑️ Limpar Logs
-                </button>
+
+                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Total em PIX</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalPix">R$ 0,00</h3>
+                        </div>
+                        <div class="w-12 h-12 payment-pix rounded-full flex items-center justify-center">
+                            <i class="fas fa-qrcode text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="countPix">0 transações</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Cartão de Crédito</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCredit">R$ 0,00</h3>
+                        </div>
+                        <div class="w-12 h-12 payment-credit rounded-full flex items-center justify-center">
+                            <i class="fas fa-credit-card text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="countCredit">0 transações</p>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 card-hover border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Dinheiro + Débito</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="totalCashDebit">R$ 0,00</h3>
+                        </div>
+                        <div class="w-12 h-12 payment-cash rounded-full flex items-center justify-center">
+                            <i class="fas fa-money-bill-wave text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2" id="countCashDebit">0 transações</p>
+                </div>
             </div>
 
-            <!-- ABA CONFIG -->
-            <div class="tab-content" id="tab-config">
-                <div class="menu-section">
-                    <h3>🍕 Cardápio Rápido</h3>
-                    <div class="menu-item">
-                        <span>🧀 Mussarela</span>
-                        <span class="menu-price">R$ 35</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>🍖 Calabresa</span>
-                        <span class="menu-price">R$ 38</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>🍗 Frango</span>
-                        <span class="menu-price">R$ 42</span>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Add Sale Form -->
+                <div class="lg:col-span-1">
+                    <div class="glass-effect rounded-xl shadow-lg p-6 sticky top-24">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-plus-circle text-purple-600 mr-2"></i>
+                            Nova Venda
+                        </h2>
+                        
+                        <form id="saleForm" class="space-y-4" onsubmit="addSale(event)">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Produto/Serviço</label>
+                                <input type="text" id="productName" required 
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                                    placeholder="Ex: Corte de Cabelo">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
+                                <input type="number" id="productValue" required step="0.01" min="0.01"
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                                    placeholder="0,00">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment" value="pix" class="hidden peer" checked>
+                                        <div class="peer-checked:payment-pix peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
+                                            <i class="fas fa-qrcode block mb-1"></i>
+                                            <span class="text-xs font-medium">PIX</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment" value="credit" class="hidden peer">
+                                        <div class="peer-checked:payment-credit peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
+                                            <i class="fas fa-credit-card block mb-1"></i>
+                                            <span class="text-xs font-medium">Crédito</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment" value="debit" class="hidden peer">
+                                        <div class="peer-checked:payment-debit peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
+                                            <i class="fas fa-card block mb-1"></i>
+                                            <span class="text-xs font-medium">Débito</span>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment" value="cash" class="hidden peer">
+                                        <div class="peer-checked:payment-cash peer-checked:text-white bg-gray-100 text-gray-700 rounded-lg py-3 text-center transition hover:bg-gray-200">
+                                            <i class="fas fa-money-bill-wave block mb-1"></i>
+                                            <span class="text-xs font-medium">Dinheiro</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Dica de Fechamento</label>
+                                <textarea id="closingTip" rows="2"
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition resize-none"
+                                    placeholder="Observações sobre a venda..."></textarea>
+                            </div>
+                            
+                            <button type="submit" 
+                                class="w-full gradient-bg text-white font-bold py-4 rounded-lg hover:opacity-90 transition transform hover:scale-105 shadow-lg">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Registrar Venda
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                <h3 style="margin-bottom: 15px; color: #e94560;">Configurações do Bot</h3>
+                <!-- Sales Table -->
+                <div class="lg:col-span-2">
+                    <div class="glass-effect rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-list-alt text-purple-600 mr-2"></i>
+                                Histórico de Vendas
+                            </h2>
+                            <div class="flex gap-2">
+                                <button onclick="filterSales('all')" class="px-4 py-2 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition text-sm font-medium">
+                                    Todas
+                                </button>
+                                <button onclick="filterSales('today')" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium">
+                                    Hoje
+                                </button>
+                                <button onclick="exportData()" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i>Exportar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data/Hora</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto/Serviço</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagamento</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dica</th>
+                                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Sales will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="emptyState" class="hidden p-12 text-center">
+                            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-inbox text-gray-400 text-4xl"></i>
+                            </div>
+                            <p class="text-gray-500">Nenhuma venda registrada ainda</p>
+                            <p class="text-sm text-gray-400 mt-1">Adicione sua primeira venda usando o formulário ao lado</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div class="glass-effect rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Vendas por Forma de Pagamento</h3>
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                        <div class="glass-effect rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Evolução Diária</h3>
+                            <canvas id="dailyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Close Cashier Modal -->
+    <div id="closeCashierModal" class="hidden fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto slide-in">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-lock text-orange-500 mr-2"></i>
+                        Fechamento de Caixa
+                    </h2>
+                    <button onclick="closeModal('closeCashierModal')" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="receipt-paper rounded-lg p-6 mb-6 border-2 border-dashed border-gray-300">
+                    <div class="text-center mb-4">
+                        <h3 class="font-bold text-xl" id="receiptStoreName">Minha Loja</h3>
+                        <p class="text-sm text-gray-500" id="receiptDate"></p>
+                    </div>
+                    
+                    <div class="border-t border-b border-gray-300 py-4 my-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Total em PIX:</span>
+                            <span class="font-bold" id="receiptPix">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Total em Crédito:</span>
+                            <span class="font-bold" id="receiptCredit">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Total em Débito:</span>
+                            <span class="font-bold" id="receiptDebit">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Total em Dinheiro:</span>
+                            <span class="font-bold" id="receiptCash">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between text-xl font-bold text-purple-600">
+                        <span>TOTAL GERAL:</span>
+                        <span id="receiptTotal">R$ 0,00</span>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-300 text-center">
+                        <p class="text-xs text-gray-500">Código de Acesso para próximo dia:</p>
+                        <p class="text-2xl font-mono font-bold text-purple-600 mt-1" id="receiptCode"></p>
+                    </div>
+                </div>
                 
-                <div class="config-item">
-                    <span>Resposta automática</span>
-                    <div class="toggle active" onclick="toggleConfig(this, 'autoReply')"></div>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                    <div class="flex">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-2"></i>
+                        <div>
+                            <p class="text-sm text-blue-700 font-medium">Importante!</p>
+                            <p class="text-sm text-blue-600">Guarde o código acima. Com ele você poderá acessar todo o histórico de vendas amanhã e continuar registrando novas vendas.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="config-item">
-                    <span>Mostrar "digitando..."</span>
-                    <div class="toggle active" onclick="toggleConfig(this, 'typing')"></div>
-                </div>
-                <div class="config-item">
-                    <span>Somente contatos salvos</span>
-                    <div class="toggle" onclick="toggleConfig(this, 'onlyContacts')"></div>
-                </div>
-                <div class="config-item">
-                    <span>Ignorar grupos</span>
-                    <div class="toggle active" onclick="toggleConfig(this, 'ignoreGroups')"></div>
-                </div>
-                <div class="config-item">
-                    <span>Delay resposta (1-3s)</span>
-                    <div class="toggle active" onclick="toggleConfig(this, 'delay')"></div>
-                </div>
-
-                <div class="warning-box" style="margin-top: 20px;">
-                    ⚠️ O bot funciona apenas enquanto esta aba estiver aberta
+                
+                <div class="flex gap-3">
+                    <button onclick="confirmCloseCashier()" class="flex-1 warning-gradient text-white font-bold py-3 rounded-lg hover:opacity-90 transition">
+                        <i class="fas fa-check mr-2"></i>Confirmar Fechamento
+                    </button>
+                    <button onclick="printReceipt()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                        <i class="fas fa-print"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Notification Toast -->
+    <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300 z-50 flex items-center">
+        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+        <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+
     <script>
-        // CONFIGURAÇÕES
-        let config = {
-            autoReply: true,
-            typing: true,
-            onlyContacts: false,
-            ignoreGroups: true,
-            delay: true
-        };
+        // Data Management
+        let currentStore = null;
+        let sales = [];
+        let paymentChart = null;
+        let dailyChart = null;
 
-        let chats = {};
-        let botActive = false;
-        let chatCounter = { total: 0, bot: 0, pending: 0, today: 0 };
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDate();
+            setInterval(updateDate, 60000);
+        });
 
-        // LOGGER
-        function addLog(message, type = 'system') {
-            const container = document.getElementById('logContainer');
-            const time = new Date().toLocaleTimeString('pt-BR');
-            const entry = document.createElement('div');
-            entry.className = `log-entry log-${type}`;
-            entry.innerHTML = `<span class="timestamp">[${time}]</span> ${message}`;
-            container.appendChild(entry);
-            container.scrollTop = container.scrollHeight;
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', options);
         }
 
-        function clearLogs() {
-            document.getElementById('logContainer').innerHTML = '';
-            addLog('Logs limpos', 'system');
+        function generateAccessCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
         }
 
-        // CARREGAR WHATSAPP WEB
-        function loadWhatsAppWeb() {
-            document.getElementById('whatsappFrame').src = 'https://web.whatsapp.com';
-            document.getElementById('connectOverlay').style.display = 'none';
-            addLog('Carregando WhatsApp Web...', 'system');
+        function toggleLoginMode() {
+            const newForm = document.getElementById('newStoreForm');
+            const existingForm = document.getElementById('existingStoreForm');
+            const toggleText = document.getElementById('toggleText');
             
-            // Verifica se carregou
-            setTimeout(() => {
-                addLog('WhatsApp Web carregado. Faça login se necessário.', 'system');
-                addLog('Clique em "Ativar Bot" após fazer login.', 'system');
-            }, 3000);
+            if (newForm.classList.contains('hidden')) {
+                newForm.classList.remove('hidden');
+                existingForm.classList.add('hidden');
+                toggleText.textContent = 'Já tem um código? Acesse aqui';
+            } else {
+                newForm.classList.add('hidden');
+                existingForm.classList.remove('hidden');
+                toggleText.textContent = 'Criar novo caixa';
+            }
         }
 
-        // INJETAR CÓDIGO DO BOT
-        function injectBotCode() {
-            const frame = document.getElementById('whatsappFrame');
-            
-            if (frame.src === 'about:blank') {
-                alert('Primeiro abra o WhatsApp Web!');
+        function showNewStore() {
+            document.getElementById('newStoreForm').classList.remove('hidden');
+            document.getElementById('existingStoreForm').classList.add('hidden');
+            document.getElementById('toggleText').textContent = 'Já tem um código? Acesse aqui';
+        }
+
+        function createStore() {
+            const storeName = document.getElementById('storeName').value.trim();
+            if (!storeName) {
+                showToast('Digite o nome do estabelecimento!', 'error');
                 return;
             }
 
-            addLog('Preparando injeção do bot...', 'system');
+            const accessCode = generateAccessCode();
+            const storeData = {
+                name: storeName,
+                code: accessCode,
+                createdAt: new Date().toISOString(),
+                sales: [],
+                closedDays: []
+            };
+
+            // Save to localStorage
+            localStorage.setItem(`pdv_store_${accessCode}`, JSON.stringify(storeData));
             
-            // Como não podemos acessar o iframe diretamente por segurança,
-            // vamos abrir em nova aba com o código pronto
-            const botCode = generateBotCode();
-            const newWindow = window.open('https://web.whatsapp.com', '_blank');
+            currentStore = storeData;
+            sales = [];
             
-            // Armazena o código para cópia
-            localStorage.setItem('pizzariaBotCode', botCode);
+            showToast(`Caixa criado! Código: ${accessCode}`, 'success');
             
             setTimeout(() => {
-                alert('🍕 CÓDIGO DO BOT COPIADO!\n\n1. Na nova aba do WhatsApp Web, aperte F12\n2. Vá no Console\n3. Cole o código (Ctrl+V)\n4. Aperte Enter\n\nO bot começará a funcionar automaticamente!');
-                copyToClipboard(botCode);
-                addLog('Código copiado! Cole no console do WhatsApp Web.', 'system');
+                enterApp();
+            }, 1500);
+        }
+
+        function accessStore() {
+            const code = document.getElementById('accessCode').value.trim().toUpperCase();
+            if (!code) {
+                showToast('Digite o código de acesso!', 'error');
+                return;
+            }
+
+            const storeData = localStorage.getItem(`pdv_store_${code}`);
+            if (!storeData) {
+                showToast('Código não encontrado!', 'error');
+                return;
+            }
+
+            currentStore = JSON.parse(storeData);
+            sales = currentStore.sales || [];
+            
+            showToast('Caixa acessado com sucesso!', 'success');
+            enterApp();
+        }
+
+        function enterApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            document.getElementById('headerStoreName').textContent = currentStore.name;
+            document.getElementById('displayAccessCode').textContent = currentStore.code;
+            
+            updateDashboard();
+            renderSalesTable();
+            initCharts();
+        }
+
+        function logout() {
+            currentStore = null;
+            sales = [];
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('storeName').value = '';
+            document.getElementById('accessCode').value = '';
+            showNewStore();
+        }
+
+        function addSale(event) {
+            event.preventDefault();
+            
+            const product = document.getElementById('productName').value.trim();
+            const value = parseFloat(document.getElementById('productValue').value);
+            const payment = document.querySelector('input[name="payment"]:checked').value;
+            const tip = document.getElementById('closingTip').value.trim();
+            
+            const sale = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                product,
+                value,
+                payment,
+                tip,
+                day: new Date().toDateString()
+            };
+            
+            sales.unshift(sale);
+            currentStore.sales = sales;
+            
+            // Save to localStorage
+            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
+            
+            // Reset form
+            document.getElementById('saleForm').reset();
+            document.querySelector('input[value="pix"]').checked = true;
+            
+            updateDashboard();
+            renderSalesTable();
+            updateCharts();
+            showToast('Venda registrada com sucesso!', 'success');
+        }
+
+        function deleteSale(id) {
+            if (!confirm('Tem certeza que deseja excluir esta venda?')) return;
+            
+            sales = sales.filter(s => s.id !== id);
+            currentStore.sales = sales;
+            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
+            
+            updateDashboard();
+            renderSalesTable();
+            updateCharts();
+            showToast('Venda excluída!', 'success');
+        }
+
+        function updateDashboard() {
+            const totals = {
+                pix: 0,
+                credit: 0,
+                debit: 0,
+                cash: 0
+            };
+            
+            const counts = {
+                pix: 0,
+                credit: 0,
+                debit: 0,
+                cash: 0
+            };
+            
+            sales.forEach(sale => {
+                totals[sale.payment] += sale.value;
+                counts[sale.payment]++;
+            });
+            
+            const total = totals.pix + totals.credit + totals.debit + totals.cash;
+            
+            document.getElementById('totalCash').textContent = formatCurrency(total);
+            document.getElementById('totalPix').textContent = formatCurrency(totals.pix);
+            document.getElementById('totalCredit').textContent = formatCurrency(totals.credit);
+            document.getElementById('totalCashDebit').textContent = formatCurrency(totals.debit + totals.cash);
+            
+            document.getElementById('countPix').textContent = `${counts.pix} transações`;
+            document.getElementById('countCredit').textContent = `${counts.credit} transações`;
+            document.getElementById('countCashDebit').textContent = `${counts.debit + counts.cash} transações`;
+        }
+
+        function renderSalesTable(filter = 'all') {
+            const tbody = document.getElementById('salesTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filteredSales = sales;
+            
+            if (filter === 'today') {
+                const today = new Date().toDateString();
+                filteredSales = sales.filter(s => s.day === today);
+            }
+            
+            if (filteredSales.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            tbody.innerHTML = filteredSales.map(sale => {
+                const date = new Date(sale.date);
+                const paymentIcons = {
+                    pix: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-qrcode mr-1"></i>PIX</span>',
+                    credit: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><i class="fas fa-credit-card mr-1"></i>Crédito</span>',
+                    debit: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><i class="fas fa-card mr-1"></i>Débito</span>',
+                    cash: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"><i class="fas fa-money-bill-wave mr-1"></i>Dinheiro</span>'
+                };
                 
-                // Simula ativação
-                setTimeout(() => {
-                    activateBotMode();
-                }, 5000);
-            }, 1000);
+                return `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${date.toLocaleDateString('pt-BR')}<br>
+                            <span class="text-gray-400 text-xs">${date.toLocaleTimeString('pt-BR')}</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 font-medium">${sale.product}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">${formatCurrency(sale.value)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${paymentIcons[sale.payment]}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="${sale.tip || ''}">${sale.tip || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <button onclick="deleteSale(${sale.id})" class="text-red-600 hover:text-red-900 transition">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function generateBotCode() {
-            return `
-// 🍕 PIZZARIA BOT - Cole no Console do WhatsApp Web e aperte Enter
-(function() {
-    if (window.pizzariaBotActive) {
-        console.log('Bot já está ativo!');
-        return;
-    }
-    window.pizzariaBotActive = true;
-    
-    console.log('🍕 Pizzaria Bot iniciado!');
-    console.log('Monitorando mensagens...');
-    
-    const CONFIG = {
-        autoReply: ${config.autoReply},
-        typing: ${config.typing},
-        onlyContacts: ${config.onlyContacts},
-        ignoreGroups: ${config.ignoreGroups}
-    };
-    
-    // Notifica painel principal
-    window.parent.postMessage({type: 'BOT_ACTIVATED'}, '*');
-    
-    // Função para enviar mensagem
-    async function sendMessage(chat, text) {
-        try {
-            if (CONFIG.typing) {
-                chat.markComposing();
-                await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
-            }
-            await chat.sendMessage(text);
-            
-            // Notifica painel
-            window.parent.postMessage({
-                type: 'MESSAGE_SENT',
-                chat: chat.name || chat.id.user,
-                text: text
-            }, '*');
-            
-            return true;
-        } catch(e) {
-            console.error('Erro:', e);
-            return false;
-        }
-    }
-    
-    // Observer de mensagens
-    const checkMessages = setInterval(() => {
-        if (!window.Store || !window.Store.Msg) return;
-        
-        window.Store.Msg.models.forEach(async (msg) => {
-            if (!msg.isNewMsg || msg.fromMe) return;
-            
-            const chat = await msg.getChat();
-            const contact = await msg.getContact();
-            
-            if (CONFIG.ignoreGroups && chat.isGroup) return;
-            if (CONFIG.onlyContacts && !contact.isMyContact) return;
-            
-            const text = msg.body.toLowerCase();
-            let resposta = '';
-            
-            // LÓGICA DA PIZZARIA
-            if (text.match(/oi|olá|ola|bom dia|boa tarde|boa noite/)) {
-                resposta = \`🍕 *Bem-vindo à Pizzaria!*\\n\\nEscolha uma opção:\\n\\n1️⃣ Cardápio\\n2️⃣ Bebidas\\n3️⃣ Fazer pedido\\n4️⃣ Promoções\\n5️⃣ Falar com atendente\`;
-            }
-            else if (text === '1' || text.includes('cardápio')) {
-                resposta = '📋 *Pizzas:*\\n🧀 Mussarela - R$35\\n🍖 Calabresa - R$38\\n🍗 Frango - R$42\\n🥓 Portuguesa - R$40\\n🍫 Chocolate - R$45';
-            }
-            else if (text === '2' || text.includes('bebida')) {
-                resposta = '🥤 *Bebidas:*\\nCoca 2L - R$12\\nGuaraná 2L - R$10\\nSuco Natural - R$8';
-            }
-            else if (text === '3' || text.includes('pedido')) {
-                resposta = '🛒 *Novo Pedido*\\n\\nMe diga:\\n1. Qual pizza?\\n2. Tamanho (P/M/G)\\n3. Endereço\\n4. Pagamento\\n\\n_Ex: "Quero Calabresa G, Rua das Flores 123, dinheiro"_';
-            }
-            else if (text === '4' || text.includes('promoção')) {
-                resposta = '🎉 *PROMOÇÕES:*\\n\\n✨ Combo Família: 2 Pizzas G + Refri = R$89,90\\n✅ Taxa GRÁTIS acima de R$60';
-            }
-            else if (text === '5' || text.includes('atendente')) {
-                resposta = '👨‍💼 Encaminhando para atendente humano... Aguarde!';
-            }
-            else if (text.includes('obrigado') || text.includes('valeu')) {
-                resposta = '😊 Por nada! Bom apetite! 🍕';
-            }
-            else {
-                resposta = 'Não entendi... Digite *"oi"* para ver o menu! 🍕';
-            }
-            
-            if (resposta && CONFIG.autoReply) {
-                await sendMessage(chat, resposta);
-                msg.isNewMsg = false; // Marca como processada
-            }
-        });
-    }, 1000);
-    
-    // Expõe controle
-    window.pizzariaBot = {
-        stop: () => {
-            clearInterval(checkMessages);
-            window.pizzariaBotActive = false;
-            console.log('Bot parado');
-        },
-        status: () => console.log('Bot ativo:', window.pizzariaBotActive)
-    };
-    
-    console.log('✅ Bot rodando! Aguardando mensagens...');
-})();`;
+        function filterSales(type) {
+            renderSalesTable(type);
         }
 
-        function copyToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-        }
-
-        // ATIVAR MODO BOT
-        function activateBotMode() {
-            botActive = true;
-            document.getElementById('botStatusDot').classList.add('active');
-            document.getElementById('botStatusText').textContent = 'Bot Online';
-            document.getElementById('btnInject').textContent = '✅ Bot Ativo';
-            document.getElementById('btnInject').disabled = true;
+        function initCharts() {
+            const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
             
-            addLog('🤖 Bot ativado com sucesso!', 'system');
-            
-            // Simula recebimento de mensagens para demonstração
-            simulateIncomingMessages();
-        }
-
-        // SIMULAR MENSAGENS (DEMO)
-        function simulateIncomingMessages() {
-            const demoChats = [
-                { name: 'João Silva', msg: 'Oi, queria fazer um pedido', time: '14:32' },
-                { name: 'Maria Oliveira', msg: 'Qual o preço da Calabresa?', time: '14:30' },
-                { name: 'Carlos Santos', msg: 'Vocês entregam no centro?', time: '14:28' }
-            ];
-            
-            let index = 0;
-            const interval = setInterval(() => {
-                if (index >= demoChats.length) {
-                    clearInterval(interval);
-                    return;
+            paymentChart = new Chart(paymentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['PIX', 'Crédito', 'Débito', 'Dinheiro'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#32bcad', '#ff6b6b', '#4ecdc4', '#f7b731'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
-                
-                const chat = demoChats[index];
-                addChat(chat.name, chat.msg, chat.time);
-                
-                // Simula resposta do bot após 2 segundos
-                setTimeout(() => {
-                    respondToChat(chat.name);
-                }, 2000);
-                
-                index++;
-            }, 4000);
+            });
+            
+            dailyChart = new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Vendas Diárias',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updateCharts();
         }
 
-        function addChat(name, message, time) {
-            const list = document.getElementById('chatList');
+        function updateCharts() {
+            if (!paymentChart || !dailyChart) return;
             
-            // Remove mensagem vazia inicial
-            if (list.children.length === 1 && list.children[0].innerHTML.includes('Nenhum chat')) {
-                list.innerHTML = '';
+            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
+            sales.forEach(s => totals[s.payment] += s.value);
+            
+            paymentChart.data.datasets[0].data = [
+                totals.pix,
+                totals.credit,
+                totals.debit,
+                totals.cash
+            ];
+            paymentChart.update();
+            
+            // Group by day
+            const dailyTotals = {};
+            sales.forEach(s => {
+                if (!dailyTotals[s.day]) dailyTotals[s.day] = 0;
+                dailyTotals[s.day] += s.value;
+            });
+            
+            const sortedDays = Object.keys(dailyTotals).sort();
+            dailyChart.data.labels = sortedDays.map(d => new Date(d).toLocaleDateString('pt-BR'));
+            dailyChart.data.datasets[0].data = sortedDays.map(d => dailyTotals[d]);
+            dailyChart.update();
+        }
+
+        function openCloseCashierModal() {
+            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
+            sales.forEach(s => totals[s.payment] += s.value);
+            const total = totals.pix + totals.credit + totals.debit + totals.cash;
+            
+            document.getElementById('receiptStoreName').textContent = currentStore.name;
+            document.getElementById('receiptDate').textContent = new Date().toLocaleString('pt-BR');
+            document.getElementById('receiptPix').textContent = formatCurrency(totals.pix);
+            document.getElementById('receiptCredit').textContent = formatCurrency(totals.credit);
+            document.getElementById('receiptDebit').textContent = formatCurrency(totals.debit);
+            document.getElementById('receiptCash').textContent = formatCurrency(totals.cash);
+            document.getElementById('receiptTotal').textContent = formatCurrency(total);
+            document.getElementById('receiptCode').textContent = currentStore.code;
+            
+            document.getElementById('closeCashierModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function confirmCloseCashier() {
+            // Save closed day info
+            if (!currentStore.closedDays) currentStore.closedDays = [];
+            currentStore.closedDays.push({
+                date: new Date().toISOString(),
+                total: sales.reduce((acc, s) => acc + s.value, 0)
+            });
+            
+            localStorage.setItem(`pdv_store_${currentStore.code}`, JSON.stringify(currentStore));
+            
+            closeModal('closeCashierModal');
+            showToast('Caixa fechado com sucesso! Use o mesmo código amanhã.', 'success');
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        function exportData() {
+            const csvContent = [
+                ['Data', 'Produto/Serviço', 'Valor', 'Forma de Pagamento', 'Dica'].join(';'),
+                ...sales.map(s => [
+                    new Date(s.date).toLocaleString('pt-BR'),
+                    s.product,
+                    s.value.toFixed(2).replace('.', ','),
+                    s.payment.toUpperCase(),
+                    s.tip || ''
+                ].join(';'))
+            ].join('\\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `vendas_${currentStore.name}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showToast('Dados exportados!', 'success');
+        }
+
+        function formatCurrency(value) {
+            return 'R$ ' + value.toFixed(2).replace('.', ',');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20');
+            
+            if (type === 'error') {
+                toast.querySelector('i').className = 'fas fa-exclamation-circle text-red-400 mr-2';
+            } else {
+                toast.querySelector('i').className = 'fas fa-check-circle text-green-400 mr-2';
             }
-            
-            const chatId = 'chat_' + Date.now();
-            const div = document.createElement('div');
-            div.className = 'chat-item';
-            div.id = chatId;
-            div.innerHTML = \`
-                <div class="chat-header">
-                    <span class="chat-name">\${name} <span class="chat-badge">novo</span></span>
-                    <span class="chat-time">\${time}</span>
-                </div>
-                <div class="chat-preview">👤: \${message}</div>
-                <div class="typing-indicator" id="typing_\${chatId}" style="display:none;">
-                    <span>Bot está digitando</span>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-            \`;
-            
-            div.onclick = () => selectChat(chatId);
-            list.insertBefore(div, list.firstChild);
-            
-            chats[chatId] = { name, message, responded: false };
-            updateStats();
-            
-            addLog(\`📩 Nova mensagem de \${name}: "\${message}"\`, 'in');
-        }
-
-        function respondToChat(name) {
-            const chatId = Object.keys(chats).find(id => chats[id].name === name);
-            if (!chatId || chats[chatId].responded) return;
-            
-            const chatEl = document.getElementById(chatId);
-            const typingEl = document.getElementById('typing_' + chatId);
-            
-            // Mostra "digitando..."
-            typingEl.style.display = 'inline-flex';
-            addLog(\`🤖 Bot está digitando para \${name}...\`, 'system');
             
             setTimeout(() => {
-                typingEl.style.display = 'none';
-                chatEl.classList.add('bot-responded');
-                chatEl.querySelector('.chat-badge').textContent = 'respondido';
-                chatEl.querySelector('.chat-badge').style.background = '#2ed573';
-                
-                const responses = [
-                    '🍕 Bem-vindo! Escolha: 1-Cardápio 2-Bebidas 3-Pedido 4-Promoções 5-Atendente',
-                    '📋 Cardápio: Mussarela R$35, Calabresa R$38, Frango R$42',
-                    '🎉 Promoção: 2 Pizzas G + Refri = R$89,90!'
-                ];
-                const response = responses[Math.floor(Math.random() * responses.length)];
-                
-                const preview = chatEl.querySelector('.chat-preview');
-                preview.innerHTML = \`🤖: \${response}\`;
-                preview.style.color = '#2ed573';
-                
-                chats[chatId].responded = true;
-                updateStats();
-                
-                addLog(\`✅ Resposta enviada para \${name}: "\${response.substring(0, 30)}..."\`, 'out');
-            }, 2000);
+                toast.classList.add('translate-y-20');
+            }, 3000);
         }
 
-        function selectChat(chatId) {
-            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(chatId).classList.add('active');
-            addLog(\`Chat selecionado: \${chats[chatId].name}\`, 'system');
-        }
-
-        function updateStats() {
-            const total = Object.keys(chats).length;
-            const bot = Object.values(chats).filter(c => c.responded).length;
-            const pending = total - bot;
-            
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statBot').textContent = bot;
-            document.getElementById('statPending').textContent = pending;
-            document.getElementById('statToday').textContent = total;
-        }
-
-        // TABS
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById('tab-' + tabName).classList.add('active');
-        }
-
-        // CONFIG TOGGLES
-        function toggleConfig(element, key) {
-            element.classList.toggle('active');
-            config[key] = element.classList.contains('active');
-            addLog(\`Config "\${key}" alterada para: \${config[key]}\`, 'system');
-        }
-
-        // LISTEN PARA MENSAGENS DO IFRAME (se permitido)
-        window.addEventListener('message', (e) => {
-            if (e.data.type === 'BOT_ACTIVATED') {
-                activateBotMode();
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('closeCashierModal');
+            if (event.target === modal) {
+                closeModal('closeCashierModal');
             }
-            else if (e.data.type === 'MESSAGE_SENT') {
-                addLog(\`Bot respondeu \${e.data.chat}: \${e.data.text.substring(0, 40)}...\`, 'out');
-            }
-        });
-
-        // INICIALIZAÇÃO
-        addLog('🍕 Central da Pizzaria iniciada', 'system');
-        addLog('Clique em "Abrir WhatsApp Web" para começar', 'system');
+        }
     </script>
 </body>
-</html>
+</html>'''
+
+# Save the file
+with open('/mnt/kimi/output/pdv_pro_caixa.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("✅ Sistema PDV Pro criado com sucesso!")
+print("📁 Arquivo salvo em: /mnt/kimi/output/pdv_pro_caixa.html")
+print("\n🚀 Funcionalidades incluídas:")
+print("   • Criação de caixa com código único de acesso")
+print("   • Persistência total dos dados no navegador (LocalStorage)")
+print("   • Registro de vendas com múltiplas formas de pagamento")
+print("   • Dashboard com estatísticas em tempo real")
+print("   • Gráficos de análise (Pagamentos e Evolução Diária)")
+print("   • Fechamento de caixa com resumo completo")
+print("   • Exportação de dados para CSV/Excel")
+print("   • Design responsivo e moderno")

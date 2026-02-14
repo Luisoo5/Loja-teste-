@@ -6,68 +6,38 @@
     <title>Meu Caixa - Sistema de Vendas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
+        * { font-family: 'Poppins', sans-serif; }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
         
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(252, 74, 26, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
         
         .receipt-paper {
             background: #fff;
-            background-image: 
-                radial-gradient(#e5e7eb 1px, transparent 1px),
-                radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
+            font-family: 'Courier Prime', monospace;
             box-shadow: 
                 0 1px 1px rgba(0,0,0,0.15), 
-                0 10px 0 -5px #eee, 
+                0 10px 0 -5px #f0f0f0, 
                 0 10px 1px -4px rgba(0,0,0,0.15), 
-                0 20px 0 -10px #eee, 
-                0 20px 1px -9px rgba(0,0,0,0.15);
+                0 20px 0 -10px #f0f0f0, 
+                0 20px 1px -9px rgba(0,0,0,0.15),
+                0 0 20px rgba(0,0,0,0.1);
             position: relative;
+            width: 320px;
+            margin: 0 auto;
         }
         
         .receipt-paper::before {
@@ -97,100 +67,67 @@
             transform: rotate(180deg);
         }
         
-        .order-item {
-            transition: all 0.2s ease;
-        }
-        
-        .order-item:hover {
-            background-color: #f3f4f6;
-            transform: translateX(5px);
-        }
-        
-        .payment-method {
-            transition: all 0.2s ease;
-        }
-        
-        .payment-method.selected {
-            border-color: #667eea;
-            background-color: #eef2ff;
-            transform: scale(1.05);
-        }
-        
-        .stats-card {
-            transition: all 0.3s ease;
-        }
-        
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse-soft {
-            animation: pulseSoft 2s infinite;
-        }
-        
-        @keyframes pulseSoft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-        
         .tab-active {
             border-bottom: 3px solid #667eea;
             color: #667eea;
             font-weight: 600;
         }
         
-        .order-card {
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: all 0.3s ease;
         }
         
-        .order-card:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
         
-        /* Print styles */
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
+        }
+        
+        .order-item-input {
+            transition: all 0.2s ease;
+        }
+        
+        .order-item-input:focus {
+            transform: scale(1.02);
+        }
+        
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #receiptSection, #receiptSection * {
-                visibility: visible;
-            }
-            #receiptSection {
+            body * { visibility: hidden; }
+            #printSection, #printSection * { visibility: visible; }
+            #printSection {
                 position: absolute;
                 left: 50%;
                 top: 0;
                 transform: translateX(-50%);
-                width: 80mm;
-            }
-            .no-print {
-                display: none !important;
             }
         }
     </style>
 </head>
-<body class="text-gray-800">
-    <!-- Login Screen -->
+<body class="pb-20">
+    <!-- Login -->
     <div id="loginScreen" class="fixed inset-0 bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center z-50">
-        <div class="glass-card rounded-2xl p-8 w-full max-w-md mx-4 text-center fade-in">
-            <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <i class="fas fa-store text-white text-3xl"></i>
+        <div class="glass-card p-8 w-full max-w-md mx-4 text-center">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <i class="fas fa-store text-purple-600 text-3xl"></i>
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Bem-vindo!</h1>
-            <p class="text-gray-500 mb-6">Digite o nome do seu estabelecimento para começar</p>
-            
-            <input type="text" id="storeNameInput" 
-                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition text-center text-lg mb-4"
-                placeholder="Ex: Loja da Esquina">
-            
+            <p class="text-gray-500 mb-6">Digite o nome do seu estabelecimento</p>
+            <input type="text" id="storeNameInput" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none text-center text-lg mb-4" placeholder="Ex: Loja da Esquina">
             <button onclick="startStore()" class="btn-primary text-white font-semibold py-3 px-8 rounded-xl w-full">
                 <i class="fas fa-play mr-2"></i>Abrir Caixa
             </button>
@@ -198,12 +135,12 @@
     </div>
 
     <!-- Main App -->
-    <div id="mainApp" class="hidden min-h-screen pb-20">
+    <div id="mainApp" class="hidden">
         <!-- Header -->
-        <header class="glass-card sticky top-0 z-40 px-6 py-4 mb-6">
-            <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <header class="glass-card mx-4 mt-4 px-6 py-4 mb-6">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                         <i class="fas fa-cash-register text-white text-xl"></i>
                     </div>
                     <div>
@@ -211,144 +148,106 @@
                         <p class="text-sm text-gray-500" id="currentDate"></p>
                     </div>
                 </div>
-                <button onclick="closeCashier()" class="btn-danger text-white px-6 py-2 rounded-xl font-medium shadow-md">
+                <button onclick="closeCashier()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl font-medium shadow-md transition">
                     <i class="fas fa-lock mr-2"></i>Fechar Caixa
                 </button>
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6">
-            <!-- Stats Cards -->
+        <main class="max-w-7xl mx-auto px-4">
+            <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="glass-card rounded-2xl p-6 stats-card border-l-4 border-purple-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Vendas Hoje</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="todayTotal">R$ 0,00</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-calendar-day text-purple-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-purple-600 mt-2" id="todayCount">0 vendas</p>
+                <div class="glass-card p-6 border-l-4 border-purple-500">
+                    <p class="text-gray-500 text-sm">Vendas Hoje</p>
+                    <h3 class="text-2xl font-bold text-gray-800" id="todayTotal">R$ 0,00</h3>
+                    <p class="text-xs text-purple-600" id="todayCount">0 vendas</p>
                 </div>
-
-                <div class="glass-card rounded-2xl p-6 stats-card border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Total do Mês</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="monthTotal">R$ 0,00</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-calendar-alt text-green-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-2" id="monthCount">0 vendas este mês</p>
+                <div class="glass-card p-6 border-l-4 border-green-500">
+                    <p class="text-gray-500 text-sm">Total do Mês</p>
+                    <h3 class="text-2xl font-bold text-gray-800" id="monthTotal">R$ 0,00</h3>
+                    <p class="text-xs text-green-600" id="monthCount">0 vendas</p>
                 </div>
-
-                <div class="glass-card rounded-2xl p-6 stats-card border-l-4 border-blue-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm font-medium">Total Acumulado</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="allTimeTotal">R$ 0,00</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-chart-line text-blue-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-blue-600 mt-2" id="allTimeCount">0 vendas no total</p>
+                <div class="glass-card p-6 border-l-4 border-blue-500">
+                    <p class="text-gray-500 text-sm">Total Acumulado</p>
+                    <h3 class="text-2xl font-bold text-gray-800" id="allTimeTotal">R$ 0,00</h3>
+                    <p class="text-xs text-blue-600" id="allTimeCount">0 vendas</p>
                 </div>
             </div>
 
             <!-- Tabs -->
-            <div class="glass-card rounded-2xl mb-6 overflow-hidden">
+            <div class="glass-card overflow-hidden">
                 <div class="flex border-b border-gray-200">
-                    <button onclick="switchTab('sales')" id="tabSales" class="flex-1 py-4 px-6 text-center tab-active transition">
+                    <button onclick="switchTab('sales')" id="tabSales" class="flex-1 py-4 px-6 text-center tab-active">
                         <i class="fas fa-shopping-cart mr-2"></i>Registrar Venda
                     </button>
-                    <button onclick="switchTab('orders')" id="tabOrders" class="flex-1 py-4 px-6 text-center text-gray-500 hover:text-gray-700 transition">
+                    <button onclick="switchTab('orders')" id="tabOrders" class="flex-1 py-4 px-6 text-center text-gray-500">
                         <i class="fas fa-clipboard-list mr-2"></i>Anotar Pedido
                     </button>
-                    <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-4 px-6 text-center text-gray-500 hover:text-gray-700 transition">
+                    <button onclick="switchTab('history')" id="tabHistory" class="flex-1 py-4 px-6 text-center text-gray-500">
                         <i class="fas fa-history mr-2"></i>Histórico
                     </button>
                 </div>
 
-                <!-- Tab Content: Sales -->
+                <!-- TAB: SALES -->
                 <div id="contentSales" class="p-6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Sale Form -->
+                        <!-- Form -->
                         <div class="space-y-4">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Nova Venda</h3>
+                            <h3 class="text-lg font-semibold text-gray-700">Nova Venda</h3>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Produto ou Serviço</label>
-                                <input type="text" id="saleProduct" 
-                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition"
-                                    placeholder="Ex: Corte de Cabelo, Pizza Grande...">
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Produto/Serviço</label>
+                                <input type="text" id="saleProduct" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none" placeholder="Ex: Corte de Cabelo">
                             </div>
                             
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-600 mb-2">Valor (R$)</label>
-                                    <input type="number" id="saleValue" step="0.01" min="0"
-                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition text-lg font-semibold"
-                                        placeholder="0,00">
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Valor (R$)</label>
+                                    <input type="number" id="saleValue" step="0.01" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none text-lg font-semibold" placeholder="0,00">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-600 mb-2">Quantidade</label>
-                                    <input type="number" id="saleQty" value="1" min="1"
-                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition">
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Qtd</label>
+                                    <input type="number" id="saleQty" value="1" min="1" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none">
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Forma de Pagamento</label>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div onclick="selectPayment('pix')" id="payPix" class="payment-method selected cursor-pointer border-2 border-gray-200 rounded-xl p-4 text-center hover:border-purple-400">
-                                        <i class="fas fa-qrcode text-green-500 text-2xl mb-2"></i>
-                                        <p class="text-sm font-medium">PIX</p>
-                                    </div>
-                                    <div onclick="selectPayment('credit')" id="payCredit" class="payment-method cursor-pointer border-2 border-gray-200 rounded-xl p-4 text-center hover:border-purple-400">
-                                        <i class="fas fa-credit-card text-red-500 text-2xl mb-2"></i>
-                                        <p class="text-sm font-medium">Cartão Crédito</p>
-                                    </div>
-                                    <div onclick="selectPayment('debit')" id="payDebit" class="payment-method cursor-pointer border-2 border-gray-200 rounded-xl p-4 text-center hover:border-purple-400">
-                                        <i class="fas fa-card text-blue-500 text-2xl mb-2"></i>
-                                        <p class="text-sm font-medium">Cartão Débito</p>
-                                    </div>
-                                    <div onclick="selectPayment('cash')" id="payCash" class="payment-method cursor-pointer border-2 border-gray-200 rounded-xl p-4 text-center hover:border-purple-400">
-                                        <i class="fas fa-money-bill-wave text-yellow-500 text-2xl mb-2"></i>
-                                        <p class="text-sm font-medium">Dinheiro</p>
-                                    </div>
+                                <label class="block text-sm font-medium text-gray-600 mb-2">Pagamento</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button onclick="selectPayment('pix')" id="btnPix" class="payment-btn py-3 rounded-xl border-2 border-green-500 bg-green-50 text-green-700 font-medium text-sm">
+                                        <i class="fas fa-qrcode block mb-1 text-lg"></i>PIX
+                                    </button>
+                                    <button onclick="selectPayment('credit')" id="btnCredit" class="payment-btn py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium text-sm hover:border-red-400">
+                                        <i class="fas fa-credit-card block mb-1 text-lg"></i>Crédito
+                                    </button>
+                                    <button onclick="selectPayment('debit')" id="btnDebit" class="payment-btn py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium text-sm hover:border-blue-400">
+                                        <i class="fas fa-card block mb-1 text-lg"></i>Débito
+                                    </button>
+                                    <button onclick="selectPayment('cash')" id="btnCash" class="payment-btn py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-medium text-sm hover:border-yellow-400">
+                                        <i class="fas fa-money-bill-wave block mb-1 text-lg"></i>Dinheiro
+                                    </button>
                                 </div>
                             </div>
                             
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Observação (opcional)</label>
-                                <textarea id="saleNote" rows="2"
-                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition resize-none"
-                                    placeholder="Alguma observação sobre a venda..."></textarea>
-                            </div>
-                            
-                            <button onclick="addSale()" class="btn-success text-white font-bold py-4 px-8 rounded-xl w-full text-lg shadow-lg">
+                            <button onclick="addSale()" class="btn-success text-white font-bold py-4 rounded-xl w-full text-lg shadow-lg">
                                 <i class="fas fa-check-circle mr-2"></i>Confirmar Venda
                             </button>
                         </div>
 
                         <!-- Receipt Preview -->
                         <div class="flex flex-col items-center">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Pré-visualização do Recibo</h3>
-                            <div id="receiptPreview" class="receipt-paper w-full max-w-sm p-6 text-sm" style="min-height: 400px;">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Recibo</h3>
+                            
+                            <div id="receiptContainer" class="receipt-paper p-6 text-sm" style="min-height: 400px;">
                                 <div class="text-center mb-4">
-                                    <h4 class="font-bold text-lg" id="receiptStoreName">MEU ESTABELECIMENTO</h4>
+                                    <h4 class="font-bold text-lg uppercase" id="receiptStoreName">MEU ESTABELECIMENTO</h4>
                                     <p class="text-gray-500 text-xs" id="receiptDate">01/01/2024 12:00</p>
-                                    <div class="border-t border-dashed border-gray-400 my-2"></div>
+                                    <div class="border-t-2 border-dashed border-gray-400 my-2"></div>
                                     <p class="text-xs text-gray-400">CUPOM FISCAL</p>
                                 </div>
                                 
                                 <div id="receiptItems" class="space-y-2 mb-4">
-                                    <p class="text-center text-gray-400 italic">Nenhum item adicionado</p>
+                                    <p class="text-center text-gray-400 italic py-8">Nenhum item</p>
                                 </div>
                                 
                                 <div class="border-t-2 border-dashed border-gray-400 pt-4 mt-4">
@@ -356,127 +255,138 @@
                                         <span>TOTAL:</span>
                                         <span id="receiptTotal">R$ 0,00</span>
                                     </div>
-                                    <p class="text-center text-xs text-gray-500 mt-2" id="receiptPayment">Forma de pagamento: -</p>
+                                    <p class="text-center text-xs text-gray-500 mt-2" id="receiptPayment">-</p>
                                 </div>
                                 
                                 <div class="text-center mt-6 text-xs text-gray-400">
                                     <p>Obrigado pela preferência!</p>
                                     <p class="mt-1">Volte sempre</p>
+                                    <div class="mt-2 text-[10px]">***</div>
                                 </div>
                             </div>
                             
-                            <div class="flex gap-3 mt-4 no-print">
-                                <button onclick="printReceipt()" class="bg-gray-800 text-white px-6 py-2 rounded-xl hover:bg-gray-700 transition">
+                            <div class="flex gap-3 mt-6">
+                                <button onclick="printReceipt()" class="bg-gray-800 text-white px-6 py-3 rounded-xl hover:bg-gray-700 transition font-medium">
                                     <i class="fas fa-print mr-2"></i>Imprimir
                                 </button>
-                                <button onclick="shareReceipt()" class="bg-green-500 text-white px-6 py-2 rounded-xl hover:bg-green-600 transition">
-                                    <i class="fab fa-whatsapp mr-2"></i>Enviar
+                                <button onclick="sendReceiptWhatsApp()" class="btn-whatsapp text-white px-6 py-3 rounded-xl font-medium">
+                                    <i class="fab fa-whatsapp mr-2"></i>Enviar Foto
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab Content: Orders -->
+                <!-- TAB: ORDERS -->
                 <div id="contentOrders" class="hidden p-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Order Form -->
-                        <div class="lg:col-span-1 space-y-4">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Novo Pedido</h3>
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-700">Novo Pedido</h3>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Nome do Cliente</label>
-                                <input type="text" id="orderClient" 
-                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition"
-                                    placeholder="Ex: João da Silva">
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Nome do Cliente</label>
+                                <input type="text" id="orderClient" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none" placeholder="Ex: João da Silva">
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Telefone (opcional)</label>
-                                <input type="tel" id="orderPhone" 
-                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition"
-                                    placeholder="(61) 99999-9999">
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Telefone</label>
+                                <input type="tel" id="orderPhone" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none" placeholder="(61) 99999-9999">
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Item do Pedido</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="orderItem" 
-                                        class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition"
-                                        placeholder="Ex: 1x Pizza Grande Calabresa">
-                                    <button onclick="addOrderItem()" class="btn-primary text-white px-4 rounded-xl">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Itens do Pedido</label>
+                                <div id="orderItemsContainer" class="space-y-2">
+                                    <div class="flex gap-2">
+                                        <input type="text" class="order-item-input flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none" placeholder="1x Pizza Grande Calabresa">
+                                        <button onclick="removeOrderItemField(this)" class="text-red-500 hover:text-red-700 px-3">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div id="orderItemsList" class="space-y-2 max-h-48 overflow-y-auto">
-                                <!-- Items will appear here -->
+                                <button onclick="addOrderItemField()" class="mt-2 text-purple-600 hover:text-purple-800 text-sm font-medium">
+                                    <i class="fas fa-plus mr-1"></i>Adicionar mais item
+                                </button>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-2">Observações Gerais</label>
-                                <textarea id="orderNotes" rows="3"
-                                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition resize-none"
-                                    placeholder="Observações sobre o pedido (troco, entrega, etc...)"></textarea>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Observações</label>
+                                <textarea id="orderNotes" rows="2" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none resize-none" placeholder="Troco para 50, entregar às 19h..."></textarea>
                             </div>
                             
-                            <button onclick="saveOrder()" class="btn-success text-white font-bold py-3 px-8 rounded-xl w-full shadow-lg">
-                                <i class="fas fa-save mr-2"></i>Salvar Pedido
+                            <button onclick="generateOrderReceipt()" class="btn-primary text-white font-bold py-3 rounded-xl w-full shadow-lg">
+                                <i class="fas fa-receipt mr-2"></i>Gerar Recibo do Pedido
                             </button>
                         </div>
 
-                        <!-- Orders List -->
-                        <div class="lg:col-span-2">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Pedidos em Andamento</h3>
-                            <div id="ordersList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Orders will appear here -->
+                        <!-- Order Receipt -->
+                        <div class="flex flex-col items-center">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Recibo do Pedido</h3>
+                            
+                            <div id="orderReceiptContainer" class="receipt-paper p-6 text-sm" style="min-height: 400px;">
+                                <div class="text-center mb-4">
+                                    <h4 class="font-bold text-lg uppercase" id="orderReceiptStore">MEU ESTABELECIMENTO</h4>
+                                    <p class="text-gray-500 text-xs">PEDIDO</p>
+                                    <div class="border-t-2 border-dashed border-gray-400 my-2"></div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <p class="font-bold text-sm">Cliente: <span id="orderReceiptClient" class="font-normal">-</span></p>
+                                    <p class="text-xs text-gray-500" id="orderReceiptPhone">-</p>
+                                    <p class="text-xs text-gray-400 mt-1" id="orderReceiptDate">01/01/2024</p>
+                                </div>
+                                
+                                <div class="border-t border-dashed border-gray-300 my-2"></div>
+                                
+                                <div id="orderReceiptItems" class="space-y-1 mb-4">
+                                    <p class="text-center text-gray-400 italic py-4">Nenhum item adicionado</p>
+                                </div>
+                                
+                                <div class="border-t-2 border-dashed border-gray-400 pt-4 mt-4">
+                                    <p class="text-xs font-bold text-gray-600 mb-1">OBSERVAÇÕES:</p>
+                                    <p class="text-xs text-gray-500" id="orderReceiptNotes">-</p>
+                                </div>
+                                
+                                <div class="text-center mt-6 text-xs text-gray-400">
+                                    <p>***</p>
+                                </div>
                             </div>
-                            <div id="emptyOrders" class="text-center py-12 text-gray-400">
-                                <i class="fas fa-clipboard-list text-6xl mb-4 opacity-30"></i>
-                                <p>Nenhum pedido anotado ainda</p>
+                            
+                            <div class="flex gap-3 mt-6">
+                                <button onclick="printOrderReceipt()" class="bg-gray-800 text-white px-6 py-3 rounded-xl hover:bg-gray-700 transition font-medium">
+                                    <i class="fas fa-print mr-2"></i>Imprimir
+                                </button>
+                                <button onclick="sendOrderWhatsApp()" class="btn-whatsapp text-white px-6 py-3 rounded-xl font-medium">
+                                    <i class="fab fa-whatsapp mr-2"></i>Enviar Foto
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab Content: History -->
+                <!-- TAB: HISTORY -->
                 <div id="contentHistory" class="hidden p-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-700">Histórico de Vendas</h3>
-                        <div class="flex gap-2">
-                            <button onclick="filterHistory('all')" class="px-4 py-2 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition text-sm font-medium">
-                                Todas
-                            </button>
-                            <button onclick="filterHistory('today')" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium">
-                                Hoje
-                            </button>
-                            <button onclick="exportData()" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition text-sm font-medium">
-                                <i class="fas fa-download mr-1"></i>Exportar
-                            </button>
-                        </div>
+                        <button onclick="exportData()" class="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition text-sm font-medium">
+                            <i class="fas fa-download mr-1"></i>Exportar Excel
+                        </button>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data/Hora</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produto</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pagamento</th>
                                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="historyTable" class="divide-y divide-gray-200">
-                                <!-- Sales will appear here -->
                             </tbody>
                         </table>
-                    </div>
-                    <div id="emptyHistory" class="hidden text-center py-12 text-gray-400">
-                        <i class="fas fa-inbox text-6xl mb-4 opacity-30"></i>
-                        <p>Nenhuma venda registrada</p>
                     </div>
                 </div>
             </div>
@@ -485,466 +395,414 @@
 
     <!-- Close Cashier Modal -->
     <div id="closeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="glass-card rounded-2xl max-w-lg w-full p-6 fade-in">
+        <div class="glass-card max-w-md w-full p-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-lock text-orange-500 mr-3"></i>
+                <i class="fas fa-lock text-red-500 mr-3"></i>
                 Fechamento de Caixa
             </h2>
             
-            <div class="bg-gray-50 rounded-xl p-4 mb-4">
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Total em PIX:</span>
-                        <span class="font-semibold text-green-600" id="closePix">R$ 0,00</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Total em Crédito:</span>
-                        <span class="font-semibold text-red-600" id="closeCredit">R$ 0,00</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Total em Débito:</span>
-                        <span class="font-semibold text-blue-600" id="closeDebit">R$ 0,00</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Total em Dinheiro:</span>
-                        <span class="font-semibold text-yellow-600" id="closeCash">R$ 0,00</span>
-                    </div>
-                    <div class="border-t border-gray-300 pt-2 mt-2">
-                        <div class="flex justify-between text-lg font-bold">
-                            <span class="text-gray-800">TOTAL GERAL:</span>
-                            <span class="text-purple-600" id="closeTotal">R$ 0,00</span>
-                        </div>
+            <div class="bg-gray-50 rounded-xl p-4 mb-4 space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-600">PIX:</span><span class="font-semibold text-green-600" id="closePix">R$ 0,00</span></div>
+                <div class="flex justify-between"><span class="text-gray-600">Crédito:</span><span class="font-semibold text-red-600" id="closeCredit">R$ 0,00</span></div>
+                <div class="flex justify-between"><span class="text-gray-600">Débito:</span><span class="font-semibold text-blue-600" id="closeDebit">R$ 0,00</span></div>
+                <div class="flex justify-between"><span class="text-gray-600">Dinheiro:</span><span class="font-semibold text-yellow-600" id="closeCash">R$ 0,00</span></div>
+                <div class="border-t border-gray-300 pt-2 mt-2">
+                    <div class="flex justify-between text-lg font-bold">
+                        <span>TOTAL:</span>
+                        <span class="text-purple-600" id="closeTotal">R$ 0,00</span>
                     </div>
                 </div>
             </div>
             
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                <p class="text-blue-800 text-sm flex items-start">
-                    <i class="fas fa-info-circle mt-0.5 mr-2"></i>
-                    <span>As informações de fechamento serão enviadas automaticamente para o WhatsApp (61) 99228-6508</span>
+                <p class="text-blue-800 text-sm">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    O resumo será enviado para (61) 99228-6508
                 </p>
             </div>
             
             <div class="flex gap-3">
-                <button onclick="confirmClose()" class="flex-1 btn-danger text-white font-bold py-3 rounded-xl">
-                    <i class="fas fa-check mr-2"></i>Confirmar Fechamento
+                <button onclick="confirmClose()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition">
+                    <i class="fas fa-check mr-2"></i>Confirmar
                 </button>
-                <button onclick="cancelClose()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium">
+                <button onclick="cancelClose()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition">
                     Cancelar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Receipt Section (Hidden, for printing) -->
-    <div id="receiptSection" class="hidden">
-        <div id="printableReceipt" class="receipt-paper p-6 text-sm" style="width: 80mm; margin: 0 auto;">
-            <!-- Content will be cloned here for printing -->
-        </div>
-    </div>
+    <!-- Hidden Print Section -->
+    <div id="printSection" class="hidden"></div>
 
     <script>
-        // Data Management
         let storeName = '';
         let sales = [];
-        let orders = [];
-        let currentOrderItems = [];
         let currentPayment = 'pix';
-        
-        // Initialize
+
         document.addEventListener('DOMContentLoaded', () => {
             updateDate();
             setInterval(updateDate, 60000);
             
-            // Load data from localStorage
             const saved = localStorage.getItem('caixaData');
             if (saved) {
                 const data = JSON.parse(saved);
                 storeName = data.storeName || '';
                 sales = data.sales || [];
-                orders = data.orders || [];
                 
                 if (storeName) {
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('mainApp').classList.remove('hidden');
-                    initializeApp();
+                    initApp();
                 }
             }
         });
-        
+
         function updateDate() {
             const now = new Date();
             document.getElementById('currentDate').textContent = now.toLocaleString('pt-BR');
             document.getElementById('receiptDate').textContent = now.toLocaleString('pt-BR');
+            document.getElementById('orderReceiptDate').textContent = now.toLocaleDateString('pt-BR');
         }
-        
+
         function saveData() {
-            localStorage.setItem('caixaData', JSON.stringify({
-                storeName,
-                sales,
-                orders
-            }));
+            localStorage.setItem('caixaData', JSON.stringify({ storeName, sales }));
         }
-        
+
         function startStore() {
             const name = document.getElementById('storeNameInput').value.trim();
-            if (!name) {
-                alert('Digite o nome do estabelecimento!');
-                return;
-            }
+            if (!name) { alert('Digite o nome do estabelecimento!'); return; }
             
             storeName = name;
-            document.getElementById('storeNameDisplay').textContent = storeName;
-            document.getElementById('receiptStoreName').textContent = storeName.toUpperCase();
-            
             saveData();
-            
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
-            initializeApp();
+            initApp();
         }
-        
-        function initializeApp() {
+
+        function initApp() {
+            document.getElementById('storeNameDisplay').textContent = storeName;
+            document.getElementById('receiptStoreName').textContent = storeName.toUpperCase();
+            document.getElementById('orderReceiptStore').textContent = storeName.toUpperCase();
             updateStats();
-            updateReceiptPreview();
             renderHistory();
-            renderOrders();
         }
-        
+
         function switchTab(tab) {
-            // Hide all contents
-            document.getElementById('contentSales').classList.add('hidden');
-            document.getElementById('contentOrders').classList.add('hidden');
-            document.getElementById('contentHistory').classList.add('hidden');
-            
-            // Remove active from all tabs
-            document.getElementById('tabSales').classList.remove('tab-active');
-            document.getElementById('tabOrders').classList.remove('tab-active');
-            document.getElementById('tabHistory').classList.remove('tab-active');
-            document.getElementById('tabSales').classList.add('text-gray-500');
-            document.getElementById('tabOrders').classList.add('text-gray-500');
-            document.getElementById('tabHistory').classList.add('text-gray-500');
-            
-            // Show selected
+            ['Sales', 'Orders', 'History'].forEach(t => {
+                document.getElementById('content' + t).classList.add('hidden');
+                document.getElementById('tab' + t).classList.remove('tab-active');
+                document.getElementById('tab' + t).classList.add('text-gray-500');
+            });
             document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
             document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('tab-active');
             document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('text-gray-500');
         }
-        
-        // Sales Functions
+
         function selectPayment(method) {
             currentPayment = method;
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            document.getElementById('pay' + method.charAt(0).toUpperCase() + method.slice(1)).classList.add('selected');
+            document.querySelectorAll('.payment-btn').forEach(btn => {
+                btn.classList.remove('border-green-500', 'border-red-500', 'border-blue-500', 'border-yellow-500', 'bg-green-50', 'bg-red-50', 'bg-blue-50', 'bg-yellow-50', 'text-green-700', 'text-red-700', 'text-blue-700', 'text-yellow-700');
+                btn.classList.add('border-gray-200', 'text-gray-600');
+            });
+            
+            const colors = {
+                pix: ['border-green-500', 'bg-green-50', 'text-green-700'],
+                credit: ['border-red-500', 'bg-red-50', 'text-red-700'],
+                debit: ['border-blue-500', 'bg-blue-50', 'text-blue-700'],
+                cash: ['border-yellow-500', 'bg-yellow-50', 'text-yellow-700']
+            };
+            
+            const btn = document.getElementById('btn' + method.charAt(0).toUpperCase() + method.slice(1));
+            btn.classList.remove('border-gray-200', 'text-gray-600');
+            btn.classList.add(...colors[method]);
+            
             updateReceiptPreview();
         }
-        
+
         function updateReceiptPreview() {
             const product = document.getElementById('saleProduct').value || 'Produto';
             const value = parseFloat(document.getElementById('saleValue').value) || 0;
             const qty = parseInt(document.getElementById('saleQty').value) || 1;
             const total = value * qty;
             
-            const paymentNames = {
-                pix: 'PIX',
-                credit: 'Cartão de Crédito',
-                debit: 'Cartão de Débito',
-                cash: 'Dinheiro'
-            };
+            const paymentNames = { pix: 'PIX', credit: 'Cartão de Crédito', debit: 'Cartão de Débito', cash: 'Dinheiro' };
             
-            const itemsHtml = value > 0 ? `
-                <div class="flex justify-between items-start">
+            document.getElementById('receiptItems').innerHTML = value > 0 ? `
+                <div class="flex justify-between items-start py-2">
                     <div>
                         <p class="font-medium">${qty}x ${product}</p>
                         <p class="text-xs text-gray-500">${paymentNames[currentPayment]}</p>
                     </div>
-                    <p class="font-semibold">${formatCurrency(total)}</p>
+                    <p class="font-bold">${formatCurrency(total)}</p>
                 </div>
-            ` : '<p class="text-center text-gray-400 italic">Nenhum item adicionado</p>';
+            ` : '<p class="text-center text-gray-400 italic py-8">Nenhum item</p>';
             
-            document.getElementById('receiptItems').innerHTML = itemsHtml;
             document.getElementById('receiptTotal').textContent = formatCurrency(total);
-            document.getElementById('receiptPayment').textContent = value > 0 ? `Forma de pagamento: ${paymentNames[currentPayment]}` : 'Forma de pagamento: -';
+            document.getElementById('receiptPayment').textContent = value > 0 ? `Pagamento: ${paymentNames[currentPayment]}` : '-';
         }
-        
+
         function addSale() {
             const product = document.getElementById('saleProduct').value.trim();
             const value = parseFloat(document.getElementById('saleValue').value);
             const qty = parseInt(document.getElementById('saleQty').value) || 1;
-            const note = document.getElementById('saleNote').value.trim();
             
-            if (!product || !value || value <= 0) {
-                alert('Preencha o produto e o valor!');
-                return;
-            }
+            if (!product || !value) { alert('Preencha produto e valor!'); return; }
             
             const sale = {
                 id: Date.now(),
                 date: new Date().toISOString(),
-                product,
-                value: value * qty,
-                qty,
-                payment: currentPayment,
-                note
+                product, value: value * qty, qty, payment: currentPayment
             };
             
             sales.unshift(sale);
             saveData();
             
-            // Reset form
             document.getElementById('saleProduct').value = '';
             document.getElementById('saleValue').value = '';
             document.getElementById('saleQty').value = '1';
-            document.getElementById('saleNote').value = '';
             
             updateStats();
             updateReceiptPreview();
             renderHistory();
-            
-            // Show success
-            showNotification('Venda registrada com sucesso!', 'success');
+            showNotification('Venda registrada!');
         }
-        
-        // Order Functions
-        function addOrderItem() {
-            const item = document.getElementById('orderItem').value.trim();
-            if (!item) return;
-            
-            currentOrderItems.push(item);
-            renderOrderItems();
-            document.getElementById('orderItem').value = '';
+
+        // ORDER FUNCTIONS
+        function addOrderItemField() {
+            const container = document.getElementById('orderItemsContainer');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" class="order-item-input flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none" placeholder="Ex: 1x Refrigerante 2L">
+                <button onclick="removeOrderItemField(this)" class="text-red-500 hover:text-red-700 px-3">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(div);
         }
-        
-        function renderOrderItems() {
-            const container = document.getElementById('orderItemsList');
-            if (currentOrderItems.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-sm italic">Nenhum item adicionado</p>';
-                return;
-            }
-            
-            container.innerHTML = currentOrderItems.map((item, index) => `
-                <div class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg order-item">
-                    <span class="text-sm">${item}</span>
-                    <button onclick="removeOrderItem(${index})" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `).join('');
+
+        function removeOrderItemField(btn) {
+            btn.parentElement.remove();
         }
-        
-        function removeOrderItem(index) {
-            currentOrderItems.splice(index, 1);
-            renderOrderItems();
-        }
-        
-        function saveOrder() {
+
+        function generateOrderReceipt() {
             const client = document.getElementById('orderClient').value.trim();
             const phone = document.getElementById('orderPhone').value.trim();
             const notes = document.getElementById('orderNotes').value.trim();
             
-            if (!client || currentOrderItems.length === 0) {
-                alert('Digite o nome do cliente e adicione pelo menos um item!');
+            const items = [];
+            document.querySelectorAll('#orderItemsContainer input').forEach(input => {
+                if (input.value.trim()) items.push(input.value.trim());
+            });
+            
+            if (!client || items.length === 0) {
+                alert('Digite o nome do cliente e pelo menos um item!');
                 return;
             }
             
-            const order = {
-                id: Date.now(),
-                client,
-                phone,
-                items: [...currentOrderItems],
-                notes,
-                date: new Date().toISOString(),
-                status: 'pending'
-            };
+            document.getElementById('orderReceiptClient').textContent = client;
+            document.getElementById('orderReceiptPhone').textContent = phone || 'Sem telefone';
+            document.getElementById('orderReceiptNotes').textContent = notes || 'Nenhuma observação';
+            document.getElementById('orderReceiptDate').textContent = new Date().toLocaleString('pt-BR');
             
-            orders.unshift(order);
-            saveData();
-            
-            // Reset
-            document.getElementById('orderClient').value = '';
-            document.getElementById('orderPhone').value = '';
-            document.getElementById('orderNotes').value = '';
-            currentOrderItems = [];
-            renderOrderItems();
-            renderOrders();
-            
-            showNotification('Pedido salvo!', 'success');
-        }
-        
-        function renderOrders() {
-            const container = document.getElementById('ordersList');
-            const empty = document.getElementById('emptyOrders');
-            
-            if (orders.length === 0) {
-                container.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
-            }
-            
-            empty.classList.add('hidden');
-            
-            container.innerHTML = orders.map(order => `
-                <div class="glass-card rounded-xl p-4 order-card ${order.status === 'completed' ? 'opacity-60' : ''}">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h4 class="font-bold text-gray-800">${order.client}</h4>
-                            ${order.phone ? `<p class="text-sm text-gray-500"><i class="fas fa-phone mr-1"></i>${order.phone}</p>` : ''}
-                        </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">
-                            ${order.status === 'pending' ? 'Pendente' : 'Concluído'}
-                        </span>
-                    </div>
-                    
-                    <div class="bg-gray-50 rounded-lg p-3 mb-3">
-                        <ul class="space-y-1 text-sm">
-                            ${order.items.map(item => `<li><i class="fas fa-check text-green-500 mr-2"></i>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                    
-                    ${order.notes ? `<p class="text-sm text-gray-600 mb-3"><i class="fas fa-sticky-note mr-1"></i>${order.notes}</p>` : ''}
-                    
-                    <div class="flex gap-2">
-                        ${order.status === 'pending' ? `
-                            <button onclick="completeOrder(${order.id})" class="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm hover:bg-green-600 transition">
-                                <i class="fas fa-check mr-1"></i>Concluir
-                            </button>
-                        ` : ''}
-                        <button onclick="deleteOrder(${order.id})" class="px-3 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+            document.getElementById('orderReceiptItems').innerHTML = items.map((item, i) => `
+                <div class="flex items-start py-1">
+                    <span class="text-gray-400 mr-2">${i + 1}.</span>
+                    <span class="font-medium">${item}</span>
                 </div>
             `).join('');
+            
+            showNotification('Recibo do pedido gerado!');
         }
-        
-        function completeOrder(id) {
-            const order = orders.find(o => o.id === id);
-            if (order) {
-                order.status = 'completed';
-                saveData();
-                renderOrders();
-                showNotification('Pedido concluído!', 'success');
+
+        // WHATSAPP FUNCTIONS WITH IMAGE
+        async function sendReceiptWhatsApp() {
+            const receipt = document.getElementById('receiptContainer');
+            
+            try {
+                const canvas = await html2canvas(receipt, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+                
+                const imageData = canvas.toDataURL('image/png');
+                
+                // Convert to blob
+                const response = await fetch(imageData);
+                const blob = await response.blob();
+                
+                // Create file
+                const file = new File([blob], 'recibo.png', { type: 'image/png' });
+                
+                // Try to use Web Share API with files (mobile)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Recibo',
+                        text: 'Segue o recibo:'
+                    });
+                } else {
+                    // Fallback: download and open WhatsApp
+                    const link = document.createElement('a');
+                    link.download = 'recibo.png';
+                    link.href = imageData;
+                    link.click();
+                    
+                    setTimeout(() => {
+                        const phone = '5561992286508';
+                        const message = 'Olá! Segue o recibo em anexo.';
+                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+                        alert('Imagem baixada! Anexe-a no WhatsApp que será aberto.');
+                    }, 500);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao gerar imagem. Tente imprimir e enviar manualmente.');
             }
         }
-        
-        function deleteOrder(id) {
-            if (!confirm('Excluir este pedido?')) return;
-            orders = orders.filter(o => o.id !== id);
-            saveData();
-            renderOrders();
+
+        async function sendOrderWhatsApp() {
+            const receipt = document.getElementById('orderReceiptContainer');
+            
+            // Check if order was generated
+            if (document.getElementById('orderReceiptClient').textContent === '-') {
+                alert('Gere o recibo do pedido primeiro!');
+                return;
+            }
+            
+            try {
+                const canvas = await html2canvas(receipt, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+                
+                const imageData = canvas.toDataURL('image/png');
+                const response = await fetch(imageData);
+                const blob = await response.blob();
+                const file = new File([blob], 'pedido.png', { type: 'image/png' });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Pedido',
+                        text: 'Novo pedido:'
+                    });
+                } else {
+                    const link = document.createElement('a');
+                    link.download = 'pedido.png';
+                    link.href = imageData;
+                    link.click();
+                    
+                    setTimeout(() => {
+                        const phone = '5561992286508';
+                        const message = 'Olá! Segue o pedido em anexo.';
+                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+                        alert('Imagem baixada! Anexe-a no WhatsApp.');
+                    }, 500);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao gerar imagem.');
+            }
         }
-        
-        // Stats & History
+
+        // PRINT FUNCTIONS
+        function printReceipt() {
+            const receipt = document.getElementById('receiptContainer').cloneNode(true);
+            const printSection = document.getElementById('printSection');
+            printSection.innerHTML = '';
+            printSection.appendChild(receipt);
+            printSection.classList.remove('hidden');
+            window.print();
+            printSection.classList.add('hidden');
+        }
+
+        function printOrderReceipt() {
+            const receipt = document.getElementById('orderReceiptContainer').cloneNode(true);
+            const printSection = document.getElementById('printSection');
+            printSection.innerHTML = '';
+            printSection.appendChild(receipt);
+            printSection.classList.remove('hidden');
+            window.print();
+            printSection.classList.add('hidden');
+        }
+
+        // STATS & HISTORY
         function updateStats() {
             const today = new Date().toDateString();
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
+            const month = new Date().getMonth();
+            const year = new Date().getFullYear();
             
             let todayTotal = 0, todayCount = 0;
             let monthTotal = 0, monthCount = 0;
-            let allTimeTotal = 0, allTimeCount = 0;
+            let allTotal = 0, allCount = 0;
             
-            sales.forEach(sale => {
-                const saleDate = new Date(sale.date);
-                const value = sale.value;
-                
-                allTimeTotal += value;
-                allTimeCount++;
-                
-                if (saleDate.toDateString() === today) {
-                    todayTotal += value;
-                    todayCount++;
-                }
-                
-                if (saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear) {
-                    monthTotal += value;
-                    monthCount++;
-                }
+            sales.forEach(s => {
+                const d = new Date(s.date);
+                allTotal += s.value; allCount++;
+                if (d.toDateString() === today) { todayTotal += s.value; todayCount++; }
+                if (d.getMonth() === month && d.getFullYear() === year) { monthTotal += s.value; monthCount++; }
             });
             
             document.getElementById('todayTotal').textContent = formatCurrency(todayTotal);
-            document.getElementById('todayCount').textContent = `${todayCount} vendas`;
+            document.getElementById('todayCount').textContent = todayCount + ' vendas';
             document.getElementById('monthTotal').textContent = formatCurrency(monthTotal);
-            document.getElementById('monthCount').textContent = `${monthCount} vendas este mês`;
-            document.getElementById('allTimeTotal').textContent = formatCurrency(allTimeTotal);
-            document.getElementById('allTimeCount').textContent = `${allTimeCount} vendas no total`;
+            document.getElementById('monthCount').textContent = monthCount + ' vendas';
+            document.getElementById('allTimeTotal').textContent = formatCurrency(allTotal);
+            document.getElementById('allTimeCount').textContent = allCount + ' vendas';
         }
-        
-        function renderHistory(filter = 'all') {
+
+        function renderHistory() {
             const tbody = document.getElementById('historyTable');
-            const empty = document.getElementById('emptyHistory');
-            
-            let filteredSales = sales;
-            if (filter === 'today') {
-                const today = new Date().toDateString();
-                filteredSales = sales.filter(s => new Date(s.date).toDateString() === today);
-            }
-            
-            if (filteredSales.length === 0) {
-                tbody.innerHTML = '';
-                empty.classList.remove('hidden');
+            if (sales.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">Nenhuma venda registrada</td></tr>';
                 return;
             }
             
-            empty.classList.add('hidden');
+            const colors = { pix: 'text-green-600 bg-green-100', credit: 'text-red-600 bg-red-100', debit: 'text-blue-600 bg-blue-100', cash: 'text-yellow-600 bg-yellow-100' };
+            const names = { pix: 'PIX', credit: 'Crédito', debit: 'Débito', cash: 'Dinheiro' };
             
-            const paymentColors = {
-                pix: 'text-green-600 bg-green-100',
-                credit: 'text-red-600 bg-red-100',
-                debit: 'text-blue-600 bg-blue-100',
-                cash: 'text-yellow-600 bg-yellow-100'
-            };
-            
-            const paymentNames = {
-                pix: 'PIX',
-                credit: 'Crédito',
-                debit: 'Débito',
-                cash: 'Dinheiro'
-            };
-            
-            tbody.innerHTML = filteredSales.map(sale => {
-                const date = new Date(sale.date);
-                return `
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            ${date.toLocaleDateString('pt-BR')}<br>
-                            <span class="text-xs text-gray-400">${date.toLocaleTimeString('pt-BR')}</span>
-                        </td>
-                        <td class="px-4 py-3 text-sm font-medium text-gray-800">${sale.product}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600">${sale.qty}</td>
-                        <td class="px-4 py-3 text-sm font-bold text-gray-800">${formatCurrency(sale.value)}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${paymentColors[sale.payment]}">
-                                ${paymentNames[sale.payment]}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="deleteSale(${sale.id})" class="text-red-500 hover:text-red-700 transition">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = sales.map(s => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm text-gray-600">${new Date(s.date).toLocaleString('pt-BR')}</td>
+                    <td class="px-4 py-3 text-sm font-medium">${s.product}</td>
+                    <td class="px-4 py-3 text-sm font-bold">${formatCurrency(s.value)}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-medium ${colors[s.payment]}">${names[s.payment]}</span></td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="deleteSale(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
         }
-        
-        function filterHistory(type) {
-            renderHistory(type);
-        }
-        
+
         function deleteSale(id) {
             if (!confirm('Excluir esta venda?')) return;
             sales = sales.filter(s => s.id !== id);
             saveData();
             updateStats();
             renderHistory();
-            showNotification('Venda excluída!', 'warning');
         }
-        
-        // Close Cashier
+
+        function exportData() {
+            const csv = [
+                ['Data', 'Produto', 'Qtd', 'Valor', 'Pagamento'].join(';'),
+                ...sales.map(s => [new Date(s.date).toLocaleString('pt-BR'), s.product, s.qty, s.value.toFixed(2).replace('.', ','), s.payment].join(';'))
+            ].join('\\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `vendas_${storeName}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // CLOSE CASHIER
         function closeCashier() {
-            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
             const today = new Date().toDateString();
+            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
             
             sales.forEach(s => {
                 if (new Date(s.date).toDateString() === today) {
@@ -962,134 +820,47 @@
             
             document.getElementById('closeModal').classList.remove('hidden');
         }
-        
+
         function cancelClose() {
             document.getElementById('closeModal').classList.add('hidden');
         }
-        
+
         function confirmClose() {
-            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
             const today = new Date().toDateString();
-            let todaySales = 0;
+            const totals = { pix: 0, credit: 0, debit: 0, cash: 0 };
+            let count = 0;
             
             sales.forEach(s => {
                 if (new Date(s.date).toDateString() === today) {
                     totals[s.payment] += s.value;
-                    todaySales++;
+                    count++;
                 }
             });
             
             const total = totals.pix + totals.credit + totals.debit + totals.cash;
             
-            // Prepare WhatsApp message
-            const message = `*Fechamento de Caixa - ${storeName}*\\n\\n` +
-                `📅 Data: ${new Date().toLocaleDateString('pt-BR')}\\n` +
-                `📊 Total de vendas: ${todaySales}\\n\\n` +
-                `💰 *Resumo Financeiro:*\\n` +
-                `• PIX: ${formatCurrency(totals.pix)}\\n` +
-                `• Cartão Crédito: ${formatCurrency(totals.credit)}\\n` +
-                `• Cartão Débito: ${formatCurrency(totals.debit)}\\n` +
-                `• Dinheiro: ${formatCurrency(totals.cash)}\\n\\n` +
-                `*TOTAL DO DIA: ${formatCurrency(total)}*\\n\\n` +
-                `_Mensagem automática do sistema de caixa_`;
+            const message = `*Fechamento de Caixa - ${storeName}*\\n\\n📅 ${new Date().toLocaleDateString('pt-BR')}\\n📊 ${count} vendas\\n\\n💰 *Resumo:*\\n• PIX: ${formatCurrency(totals.pix)}\\n• Crédito: ${formatCurrency(totals.credit)}\\n• Débito: ${formatCurrency(totals.debit)}\\n• Dinheiro: ${formatCurrency(totals.cash)}\\n\\n*TOTAL: ${formatCurrency(total)}*`;
             
-            // Send to WhatsApp
-            const phone = '5561992286508';
-            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
+            window.open(`https://wa.me/5561992286508?text=${encodeURIComponent(message)}`, '_blank');
             document.getElementById('closeModal').classList.add('hidden');
-            showNotification('Fechamento realizado! Redirecionando para WhatsApp...', 'success');
         }
-        
-        // Receipt Functions
-        function printReceipt() {
-            const preview = document.getElementById('receiptPreview');
-            const printable = document.getElementById('printableReceipt');
-            printable.innerHTML = preview.innerHTML;
-            
-            document.getElementById('receiptSection').classList.remove('hidden');
-            window.print();
-            document.getElementById('receiptSection').classList.add('hidden');
+
+        function formatCurrency(v) {
+            return 'R$ ' + parseFloat(v).toFixed(2).replace('.', ',');
         }
-        
-        function shareReceipt() {
-            const product = document.getElementById('saleProduct').value || 'Produto';
-            const value = parseFloat(document.getElementById('saleValue').value) || 0;
-            const qty = parseInt(document.getElementById('saleQty').value) || 1;
-            const total = value * qty;
-            
-            if (total === 0) {
-                alert('Adicione um valor primeiro!');
-                return;
-            }
-            
-            const paymentNames = {
-                pix: 'PIX',
-                credit: 'Cartão de Crédito',
-                debit: 'Cartão de Débito',
-                cash: 'Dinheiro'
-            };
-            
-            const message = `*${storeName}*\\n\\n` +
-                `📄 *RECIBO*\\n` +
-                `Produto: ${product}\\n` +
-                `Quantidade: ${qty}\\n` +
-                `Valor unitário: ${formatCurrency(value)}\\n` +
-                `Forma de pagamento: ${paymentNames[currentPayment]}\\n\\n` +
-                `*TOTAL: ${formatCurrency(total)}*\\n\\n` +
-                `Obrigado pela preferência!`;
-            
-            const phone = '5561992286508';
-            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-        
-        function exportData() {
-            const csvContent = [
-                ['Data', 'Produto', 'Quantidade', 'Valor Total', 'Forma de Pagamento', 'Observação'].join(';'),
-                ...sales.map(s => [
-                    new Date(s.date).toLocaleString('pt-BR'),
-                    s.product,
-                    s.qty,
-                    s.value.toFixed(2).replace('.', ','),
-                    s.payment,
-                    s.note || ''
-                ].join(';'))
-            ].join('\\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `vendas_${storeName}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            
-            showNotification('Dados exportados!', 'success');
-        }
-        
-        function formatCurrency(value) {
-            return 'R$ ' + parseFloat(value).toFixed(2).replace('.', ',');
-        }
-        
-        function showNotification(message, type) {
+
+        function showNotification(msg) {
             const div = document.createElement('div');
-            div.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 transform transition-all duration-300 translate-y-20 ${
-                type === 'success' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
-            }`;
-            div.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation'} mr-2"></i>${message}`;
+            div.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
+            div.innerHTML = `<i class="fas fa-check mr-2"></i>${msg}`;
             document.body.appendChild(div);
-            
-            setTimeout(() => div.classList.remove('translate-y-20'), 100);
-            setTimeout(() => {
-                div.classList.add('translate-y-20');
-                setTimeout(() => div.remove(), 300);
-            }, 3000);
+            setTimeout(() => div.remove(), 3000);
         }
-        
-        // Event listeners for receipt preview
-        document.getElementById('saleProduct').addEventListener('input', updateReceiptPreview);
-        document.getElementById('saleValue').addEventListener('input', updateReceiptPreview);
-        document.getElementById('saleQty').addEventListener('input', updateReceiptPreview);
+
+        // Event listeners
+        ['saleProduct', 'saleValue', 'saleQty'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateReceiptPreview);
+        });
     </script>
 </body>
-</html>'''
+</html>
